@@ -4,14 +4,14 @@
   "private": false,
   "description": "Boîte à outils PDF et Images 100 % locale — exécutée dans le navigateur, sans envoi de données sur un serveur.",
   "license": "MIT",
-  "author": "0xw01f",
-  "homepage": "https://github.com/0xw01f/Boite-Outils-Documents-PDFs",
+  "author": "Argus Labs <contact@argus-labs.fr>",
+  "homepage": "https://argus-labs.fr",
   "repository": {
     "type": "git",
-    "url": "https://github.com/0xw01f/Boite-Outils-Documents-PDFs.git"
+    "url": "https://github.com/argus-labs/pdf-tools.git"
   },
   "bugs": {
-    "url": "https://github.com/0xw01f/Boite-Outils-Documents-PDFs/issues"
+    "url": "https://github.com/argus-labs/pdf-tools/issues"
   },
   "keywords": [
     "pdf",

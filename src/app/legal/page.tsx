@@ -224,7 +224,7 @@ export default function LegalPage() {
             fonctionnement du service :
           </p>
           <p className="mt-2 font-mono text-muted-foreground">
-            —
+            contact@argus-labs.fr
           </p>
         </CardContent>
       </Card>

@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   },
   description: "Outils PDF et images gratuits, 100% locaux et sécurisés. Fusionnez, divisez, compressez, protégez, convertissez vos documents sans envoyer de données sur Internet.",
   keywords: ["PDF", "Outils PDF", "Fusionner PDF", "Diviser PDF", "Compresser PDF", "Filigrane PDF", "Convertir PDF", "Sécurité PDF", "100% local", "Offline"],
-  authors: [{ name: "0xw01f" }],
-  creator: "0xw01f",
-  metadataBase: new URL("https://github.com/0xw01f/Boite-Outils-Documents-PDFs"),
+  authors: [{ name: "Argus Labs" }],
+  creator: "Argus Labs",
+  metadataBase: new URL("https://argus-labs.fr"),
   openGraph: {
     type: "website",
     locale: "fr_FR",

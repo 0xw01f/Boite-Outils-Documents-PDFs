@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const BASE: Metadata = {
-  metadataBase: new URL("https://github.com/0xw01f/Boite-Outils-Documents-PDFs"),
+  metadataBase: new URL("https://argus-labs.fr"),
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -15,7 +15,7 @@ function makeMeta(title: string, description: string, keywords: string[]): Metad
     ...BASE,
     title,
     description,
-    keywords: [...keywords, "PDF", "100% local", "offline", "navigateur"],
+    keywords: [...keywords, "PDF", "100% local", "offline", "navigateur", "Argus Labs"],
   };
 }
 
