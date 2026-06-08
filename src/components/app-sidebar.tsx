@@ -188,14 +188,14 @@ export function AppSidebar() {
             </Link>
             <div className="text-center">
               <p className="text-[10px] text-muted-foreground">
-                &copy; {new Date().getFullYear()} made by{" "}
+                &copy; {new Date().getFullYear()} —{" "}
                 <a
-                  href="https://argus-labs.fr/community"
+                  href="https://github.com/0xw01f/Boite-Outils-Documents-PDFs"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-foreground"
                 >
-                  Argus Labs
+                  Projet open source
                 </a>
               </p>
             </div>
