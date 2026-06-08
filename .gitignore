@@ -38,4 +38,10 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# Agent-specific files
+AGENTS.md
+CLAUDE.md
+
+# Large vendored binary — copied via postinstall from pdfjs-dist
+public/pdf.worker.min.mjs
