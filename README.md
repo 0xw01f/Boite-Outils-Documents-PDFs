@@ -57,7 +57,7 @@ Tous les traitements s'exécutent **exclusivement dans votre navigateur** via de
 
 ```bash
 # Cloner le repo
-git clone https://github.com/argus-labs/pdf-tools.git
+git clone https://github.com/0xw01f/Boite-Outils-Documents-PDFs.git
 cd pdf-tools
 
 # Installer les dépendances (le postinstall copie automatiquement le worker PDF.js)
@@ -113,6 +113,4 @@ Les bibliothèques tierces utilisées (pdf-lib, pdfjs-dist, jspdf, shadcn/ui, et
 
 ---
 
-<p align="center">
-  Fabriqué avec ❤️ par <a href="https://argus-labs.fr">Argus Labs</a>
-</p>
+
