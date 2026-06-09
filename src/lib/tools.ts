@@ -47,6 +47,7 @@ export const toolCategories: ToolCategory[] = [
       { id: "secrets", name: "Générateur de secrets", description: "UUID, clés API, tokens, mots de passe", icon: "Fingerprint", category: "utilities", href: "/tools/secrets" },
       { id: "hash", name: "Hash", description: "Calculez le hash d'un texte ou fichier", icon: "Hash", category: "utilities", href: "/tools/hash" },
       { id: "json-formatter", name: "JSON Formatter", description: "Formatez et validez du JSON", icon: "Braces", category: "utilities", href: "/tools/json-formatter" },
+      { id: "twitter-video", name: "Téléchargeur X", description: "Téléchargez les vidéos de X/Twitter", icon: "Download", category: "utilities", href: "/tools/twitter-video" },
     ],
   },
 ];

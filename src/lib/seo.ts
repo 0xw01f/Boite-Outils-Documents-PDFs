@@ -125,4 +125,9 @@ export const toolMetadata = {
     "Formatez, validez et embellissez votre JSON. Indentation automatique et détection d'erreurs.",
     ["JSON formatter", "valider JSON", "formater JSON", "JSON beautifier"]
   ),
+  "twitter-video": makeMeta(
+    "Téléchargeur X / Twitter — Télécharger une vidéo",
+    "Téléchargez les vidéos de X (Twitter) au format MP4. Collez le lien du post, récupérez la vidéo.",
+    ["télécharger vidéo Twitter", "téléchargeur X", "MP4 Twitter", "vidéo X", "download Twitter video"]
+  ),
 };
