@@ -1,16 +1,28 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PreviewPanel } from "@/components/preview-panel";
+import { compressPdf, type CompressMode } from "@/features/pdf-compress/lib/compress-pdf";
 
 export function PdfCompressTool() {
   const [files, setFiles] = useState<File[]>([]);
+  const [mode, setMode] = useState<CompressMode>("strong");
+  const [quality, setQuality] = useState([70]);
+  const [dpi, setDpi] = useState([150]);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -29,7 +41,7 @@ export function PdfCompressTool() {
     setCompressionInfo(null);
   }, []);
 
-  const compressPdf = async () => {
+  const handleCompress = async () => {
     if (files.length === 0) {
       setError("Veuillez sélectionner un fichier PDF.");
       return;
@@ -41,17 +53,13 @@ export function PdfCompressTool() {
 
       const file = files[0];
       const originalSize = file.size;
-      const bytes = await file.arrayBuffer();
-      const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
 
-      pdf.setTitle("");
-      pdf.setAuthor("");
-      pdf.setSubject("");
-      pdf.setKeywords([]);
-      pdf.setCreator("");
-      pdf.setProducer("");
-      const newBytes = await pdf.save({ useObjectStreams: true });
-      const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const blob = await compressPdf(file, {
+        mode,
+        quality: quality[0],
+        dpi: dpi[0],
+      });
+
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
@@ -59,8 +67,9 @@ export function PdfCompressTool() {
         original: originalSize || 1,
         compressed: blob.size,
       });
-    } catch (err) {
-      setError("Erreur lors de la compression.");
+    } catch (err: any) {
+      console.error(err);
+      setError(`Erreur lors de la compression : ${err?.message || "Vérifiez que le PDF est valide."}`);
     } finally {
       setProcessing(false);
     }
@@ -69,7 +78,7 @@ export function PdfCompressTool() {
   return (
     <ToolLayout
       title="Compresser un PDF"
-      description="Réduisez la taille d'un PDF en optimisant sa structure."
+      description="Réduisez fortement la taille d'un PDF en récompressant ses images."
     >
       <div className="space-y-6">
         <FileDropZone
@@ -78,6 +87,60 @@ export function PdfCompressTool() {
           files={files}
           onRemoveFile={() => setFiles([])}
         />
+
+        {files.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-3">
+              <Label>Mode de compression</Label>
+              <Select value={mode} onValueChange={(value) => setMode(value as CompressMode)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="strong">Fort (recommandé)</SelectItem>
+                  <SelectItem value="structure">Structure uniquement</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {mode === "strong"
+                  ? "Recompresse chaque page en image JPEG. Gains importants mais le texte n'est plus sélectionnable."
+                  : "Garde le texte sélectionnable mais ne compresse que la structure (métadonnées, streams)."}
+              </p>
+            </div>
+
+            {mode === "strong" && (
+              <>
+                <div className="space-y-3">
+                  <Label>Qualité JPEG ({quality[0]}%)</Label>
+                  <Slider
+                    value={quality}
+                    onValueChange={setQuality}
+                    min={30}
+                    max={100}
+                    step={5}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    60-80% offre le meilleur compromis taille / qualité.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <Label>Résolution de sortie ({dpi[0]} DPI)</Label>
+                  <Slider
+                    value={dpi}
+                    onValueChange={setDpi}
+                    min={72}
+                    max={300}
+                    step={12}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    150 DPI suffit pour la plupart des usages web et mail.
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {error && (
           <Alert variant="destructive">
@@ -106,7 +169,7 @@ export function PdfCompressTool() {
         )}
 
         <Button
-          onClick={compressPdf}
+          onClick={handleCompress}
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
