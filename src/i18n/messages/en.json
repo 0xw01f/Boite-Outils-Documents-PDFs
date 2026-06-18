@@ -504,7 +504,7 @@
       "collection": "No collection",
       "collectionText": "we do not collect, store or transmit any file, metadata or document content.",
       "cookies": "Cookies & trackers",
-      "cookiesText": "This site does not use any tracking cookies, spy pixels or third-party analytics service (Google Analytics, etc.). Only technical session cookies may be used by the Next.js framework for the application to work.",
+      "cookiesText": "This site uses Umami, a privacy-friendly self-hosted analytics tool, to anonymously count page views. Umami does not use cookies, track users, or collect personal data. No other tracking cookies, spy pixels or third-party analytics service (Google Analytics, etc.) are used. Only technical session cookies may be used by the Next.js framework for the application to work.",
       "hosting": "Hosting",
       "hostingText": "The site is served as static files. No server-side processing is performed on your documents. Processing libraries (pdf-lib, pdfjs-dist, jspdf) run entirely in your browser."
     },

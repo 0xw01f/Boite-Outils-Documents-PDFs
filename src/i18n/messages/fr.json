@@ -504,7 +504,7 @@
       "collection": "Aucune collecte",
       "collectionText": "nous ne collectons, ne stockons et ne transmettons aucun fichier, métadonnée ou contenu de document.",
       "cookies": "Cookies & traceurs",
-      "cookiesText": "Ce site n'utilise aucun cookie de traçage, aucun pixel espion et aucun service d'analyse tierce (Google Analytics, etc.). Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
+      "cookiesText": "Ce site utilise Umami, un outil d'analyse auto-hébergé et respectueux de la vie privée, pour compter les pages vues de manière anonyme. Umami ne dépose aucun cookie, ne trace pas les utilisateurs et ne collecte aucune donnée personnelle. Aucun autre cookie de traçage, pixel espion ou service d'analyse tierce (Google Analytics, etc.) n'est utilisé. Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
       "hosting": "Hébergement",
       "hostingText": "Le site est servi sous forme de fichiers statiques. Aucun traitement serveur n'est effectué sur vos documents. Les bibliothèques de traitement (pdf-lib, pdfjs-dist, jspdf) s'exécutent entièrement dans votre navigateur."
     },

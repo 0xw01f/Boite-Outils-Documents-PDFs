@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locales, type Locale } from "@/i18n/config";
+import Script from "next/script";
 import { AppSidebar } from "@/components/app-sidebar";
 import "../globals.css";
 
@@ -71,6 +72,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <Script
+          src="https://analytics.argus-labs.fr/script.js"
+          data-website-id="03376350-eb4c-4915-a18d-28b466f03fc1"
+          strategy="lazyOnload"
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <AppSidebar />
