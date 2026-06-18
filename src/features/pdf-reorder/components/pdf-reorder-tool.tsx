@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -11,10 +13,10 @@ import { PreviewPanel } from "@/components/preview-panel";
 import { PdfPageGrid } from "@/components/pdf-page-grid";
 
 export function PdfReorderTool() {
+  const t = useTranslations("tool.reorderPages");
   const [files, setFiles] = useState<File[]>([]);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageOrder, setPageOrder] = useState<number[]>([]);
-  const [pages, setPages] = useState<{ num: number; name: string }[]>([]);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -40,15 +42,14 @@ export function PdfReorderTool() {
       const count = pdf.getPageCount();
       const initialOrder = Array.from({ length: count }, (_, i) => i);
       setPageOrder(initialOrder);
-      setPages(Array.from({ length: count }, (_, i) => ({ num: i, name: `Page ${i + 1}` })));
     } catch {
-      setError("Impossible de lire le PDF.");
+      setError(t("loadError"));
     }
-  }, []);
+  }, [t]);
 
   const reorderPdf = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -74,8 +75,8 @@ export function PdfReorderTool() {
       const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la réorganisation.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -83,15 +84,15 @@ export function PdfReorderTool() {
 
   return (
     <ToolLayout
-      title="Réorganiser les pages"
-      description="Changez l'ordre des pages d'un PDF par glisser-déposer."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
           accept=".pdf,application/pdf"
           onFilesSelected={handleFilesSelected}
           files={files}
-          onRemoveFile={() => { setFiles([]); setPdfUrl(null); setPageOrder([]); setPages([]); }}
+          onRemoveFile={() => { setFiles([]); setPdfUrl(null); setPageOrder([]); }}
         />
 
         {pdfUrl && (
@@ -117,7 +118,7 @@ export function PdfReorderTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Traitement..." : "Réorganiser"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument, degrees } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -12,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PreviewPanel } from "@/components/preview-panel";
 
 export function PdfRotateTool() {
+  const t = useTranslations("tool.rotatePdf");
   const [files, setFiles] = useState<File[]>([]);
   const [rotation, setRotation] = useState("90");
   const [processing, setProcessing] = useState(false);
@@ -32,7 +35,7 @@ export function PdfRotateTool() {
 
   const rotatePdf = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -62,8 +65,8 @@ export function PdfRotateTool() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la rotation du PDF.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -71,8 +74,8 @@ export function PdfRotateTool() {
 
   return (
     <ToolLayout
-      title="Rotation PDF"
-      description="Faites pivoter toutes les pages d'un PDF dans le sens horaire."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -84,15 +87,15 @@ export function PdfRotateTool() {
 
         {files.length > 0 && (
           <div className="space-y-3">
-            <Label>Angle de rotation</Label>
+            <Label>{t("angleLabel")}</Label>
             <Select value={rotation} onValueChange={setRotation}>
               <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="90">90° (horaire)</SelectItem>
-                <SelectItem value="180">180°</SelectItem>
-                <SelectItem value="270">270° (anti-horaire)</SelectItem>
+                <SelectItem value="90">{t("angle90")}</SelectItem>
+                <SelectItem value="180">{t("angle180")}</SelectItem>
+                <SelectItem value="270">{t("angle270")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -111,7 +114,7 @@ export function PdfRotateTool() {
           className="w-full sm:w-auto"
         >
           <RotateCw className="h-4 w-4 mr-2" />
-          {processing ? "Traitement..." : "Tourner le PDF"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 interface VideoVariant {
   url: string;
@@ -13,21 +14,69 @@ interface TweetInfo {
   videos: VideoVariant[];
 }
 
+type Locale = "fr" | "en";
+
+const messages: Record<
+  Locale,
+  {
+    missingUrl: string;
+    invalidUrl: string;
+    notFound: string;
+    internalError: string;
+    downloadFailed: string;
+    proxyError: string;
+    defaultAuthor: string;
+    defaultTitle: string;
+    unknownQuality: string;
+    mp4: string;
+  }
+> = {
+  fr: {
+    missingUrl: "URL manquante.",
+    invalidUrl: "URL invalide. Format attendu : https://x.com/utilisateur/status/123456789",
+    notFound: "Impossible d'extraire la vidéo. Le tweet est peut-être privé ou indisponible.",
+    internalError: "Erreur interne.",
+    downloadFailed: "Téléchargement échoué.",
+    proxyError: "Erreur de proxy.",
+    defaultAuthor: "Twitter",
+    defaultTitle: "Twitter Video",
+    unknownQuality: "Unknown",
+    mp4: "MP4",
+  },
+  en: {
+    missingUrl: "Missing URL.",
+    invalidUrl: "Invalid URL. Expected format: https://x.com/user/status/123456789",
+    notFound: "Unable to extract the video. The tweet may be private or unavailable.",
+    internalError: "Internal error.",
+    downloadFailed: "Download failed.",
+    proxyError: "Proxy error.",
+    defaultAuthor: "Twitter",
+    defaultTitle: "Twitter Video",
+    unknownQuality: "Unknown",
+    mp4: "MP4",
+  },
+};
+
+async function getMessages() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("NEXT_LOCALE")?.value as Locale) || "en";
+  return messages[locale] ?? messages.en;
+}
+
 function extractTweetPath(url: string): string | null {
   try {
     const u = new URL(url);
     const m = u.pathname.match(/^\/([^/]+)\/status\/(\d+)/);
     if (m) return `${m[1]}/status/${m[2]}`;
   } catch {
-    // ignore
+    return null;
   }
-  // x.com/username/status/123 or twitter.com/...
   const m2 = url.match(/(?:twitter\.com|x\.com)\/([^/]+)\/status\/(\d+)/);
   if (m2) return `${m2[1]}/status/${m2[2]}`;
   return null;
 }
 
-async function fetchFromFxTwitter(path: string): Promise<TweetInfo | null> {
+async function fetchFromFxTwitter(path: string, t: (typeof messages)["en"]): Promise<TweetInfo | null> {
   try {
     const res = await fetch(`https://api.fxtwitter.com/${path}`, {
       headers: {
@@ -38,7 +87,7 @@ async function fetchFromFxTwitter(path: string): Promise<TweetInfo | null> {
     if (!res.ok) return null;
     const data = await res.json();
     const tweet = data?.tweet || data;
-    const author = tweet?.author?.name || tweet?.author?.screen_name || "Twitter";
+    const author = tweet?.author?.name || tweet?.author?.screen_name || t.defaultAuthor;
     const text = tweet?.text || "";
     const media = tweet?.media;
     const videos: VideoVariant[] = [];
@@ -47,14 +96,14 @@ async function fetchFromFxTwitter(path: string): Promise<TweetInfo | null> {
       for (const v of media.videos) {
         videos.push({
           url: v.url,
-          quality: v.quality || "Unknown",
+          quality: v.quality || t.unknownQuality,
           bitrate: v.bitrate,
         });
       }
     } else if (media?.video) {
       videos.push({
         url: media.video.url,
-        quality: media.video.quality || "Unknown",
+        quality: media.video.quality || t.unknownQuality,
         bitrate: media.video.bitrate,
       });
     }
@@ -62,7 +111,7 @@ async function fetchFromFxTwitter(path: string): Promise<TweetInfo | null> {
     if (videos.length === 0) return null;
 
     return {
-      title: text.slice(0, 120) || "Twitter Video",
+      title: text.slice(0, 120) || t.defaultTitle,
       author,
       thumbnail: media?.videos?.[0]?.thumbnail_url || media?.thumbnail_url || media?.poster,
       videos,
@@ -72,7 +121,7 @@ async function fetchFromFxTwitter(path: string): Promise<TweetInfo | null> {
   }
 }
 
-async function fetchFromVxTwitter(path: string): Promise<TweetInfo | null> {
+async function fetchFromVxTwitter(path: string, t: (typeof messages)["en"]): Promise<TweetInfo | null> {
   try {
     const res = await fetch(`https://api.vxtwitter.com/${path}`, {
       headers: {
@@ -83,7 +132,7 @@ async function fetchFromVxTwitter(path: string): Promise<TweetInfo | null> {
     if (!res.ok) return null;
     const data = await res.json();
     const text = data?.text || "";
-    const author = data?.user_name || data?.user_screen_name || "Twitter";
+    const author = data?.user_name || data?.user_screen_name || t.defaultAuthor;
     const media = data?.mediaURLs || [];
     const thumb = data?.media_extended?.[0]?.thumbnail_url || data?.media_extended?.[0]?.url;
 
@@ -97,11 +146,10 @@ async function fetchFromVxTwitter(path: string): Promise<TweetInfo | null> {
         });
       }
     }
-    // Fallback to mediaURLs if no extended info
     if (videos.length === 0 && media.length > 0) {
       for (const url of media) {
         if (url.includes("video.twimg.com")) {
-          videos.push({ url, quality: "MP4" });
+          videos.push({ url, quality: t.mp4 });
         }
       }
     }
@@ -109,7 +157,7 @@ async function fetchFromVxTwitter(path: string): Promise<TweetInfo | null> {
     if (videos.length === 0) return null;
 
     return {
-      title: text.slice(0, 120) || "Twitter Video",
+      title: text.slice(0, 120) || t.defaultTitle,
       author,
       thumbnail: thumb,
       videos,
@@ -120,45 +168,48 @@ async function fetchFromVxTwitter(path: string): Promise<TweetInfo | null> {
 }
 
 export async function POST(req: NextRequest) {
+  const t = await getMessages();
+
   try {
     const body = await req.json();
     const url = body?.url?.trim() as string;
 
     if (!url) {
-      return NextResponse.json({ error: "URL manquante." }, { status: 400 });
+      return NextResponse.json({ error: t.missingUrl }, { status: 400 });
     }
 
     const path = extractTweetPath(url);
     if (!path) {
       return NextResponse.json(
-        { error: "URL invalide. Format attendu : https://x.com/utilisateur/status/123456789" },
+        { error: t.invalidUrl },
         { status: 400 }
       );
     }
 
-    let info = await fetchFromFxTwitter(path);
+    let info = await fetchFromFxTwitter(path, t);
     if (!info) {
-      info = await fetchFromVxTwitter(path);
+      info = await fetchFromVxTwitter(path, t);
     }
 
     if (!info) {
       return NextResponse.json(
-        { error: "Impossible d'extraire la vidéo. Le tweet est peut-être privé ou indisponible." },
+        { error: t.notFound },
         { status: 404 }
       );
     }
 
     return NextResponse.json(info);
   } catch {
-    return NextResponse.json({ error: "Erreur interne." }, { status: 500 });
+    return NextResponse.json({ error: t.internalError }, { status: 500 });
   }
 }
 
-// Proxy download endpoint to avoid CORS issues on direct links
 export async function GET(req: NextRequest) {
+  const t = await getMessages();
+
   const videoUrl = req.nextUrl.searchParams.get("url");
   if (!videoUrl) {
-    return NextResponse.json({ error: "URL manquante." }, { status: 400 });
+    return NextResponse.json({ error: t.missingUrl }, { status: 400 });
   }
 
   try {
@@ -171,7 +222,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!res.ok) {
-      return NextResponse.json({ error: "Téléchargement échoué." }, { status: 502 });
+      return NextResponse.json({ error: t.downloadFailed }, { status: 502 });
     }
 
     const headers = new Headers();
@@ -181,6 +232,6 @@ export async function GET(req: NextRequest) {
 
     return new NextResponse(res.body, { headers, status: 200 });
   } catch {
-    return NextResponse.json({ error: "Erreur de proxy." }, { status: 500 });
+    return NextResponse.json({ error: t.proxyError }, { status: 500 });
   }
 }

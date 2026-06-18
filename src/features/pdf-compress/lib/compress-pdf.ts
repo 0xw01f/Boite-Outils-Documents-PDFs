@@ -7,16 +7,17 @@ export type CompressMode = "structure" | "strong";
 
 export interface CompressOptions {
   mode: CompressMode;
-  quality: number; // 0-100
-  dpi?: number; // for strong mode
+  quality: number;
+  dpi?: number;
+  t?: (key: string, values?: Record<string, string | number>) => string;
 }
 
 const DEFAULT_DPI = 150;
 const MAX_PAGES = 200;
 
-async function loadPdfJs(): Promise<typeof PdfjsType> {
+async function loadPdfJs(t?: CompressOptions["t"]): Promise<typeof PdfjsType> {
   if (typeof window === "undefined") {
-    throw new Error("pdfjs-dist can only be loaded in the browser");
+    throw new Error(t ? t("pdfJsBrowserError") : "pdfjs-dist can only be loaded in the browser");
   }
   const pdfjsLib = await import("pdfjs-dist");
   pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
@@ -25,7 +26,7 @@ async function loadPdfJs(): Promise<typeof PdfjsType> {
 
 export async function compressPdf(file: File, options: CompressOptions): Promise<Blob> {
   if (options.mode === "strong") {
-    return compressPdfStrong(file, options.quality, options.dpi ?? DEFAULT_DPI);
+    return compressPdfStrong(file, options.quality, options.dpi ?? DEFAULT_DPI, options.t);
   }
   return compressPdfStructure(file);
 }
@@ -45,18 +46,22 @@ async function compressPdfStructure(file: File): Promise<Blob> {
   return new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
 }
 
-async function compressPdfStrong(file: File, quality: number, dpi: number): Promise<Blob> {
+async function compressPdfStrong(
+  file: File,
+  quality: number,
+  dpi: number,
+  t?: CompressOptions["t"]
+): Promise<Blob> {
   const originalSize = file.size;
-  const pdfjsLib = await loadPdfJs();
+  const pdfjsLib = await loadPdfJs(t);
   const bytes = await file.arrayBuffer();
   const sourcePdf = await pdfjsLib.getDocument({ data: bytes }).promise;
 
   if (sourcePdf.numPages > MAX_PAGES) {
-    throw new Error(`PDF trop volumineux (max ${MAX_PAGES} pages)`);
+    throw new Error(t ? t("tooManyPagesError", { max: MAX_PAGES }) : `PDF too large (max ${MAX_PAGES} pages)`);
   }
 
   const outputPdf = await PDFDocument.create();
-  // Strip metadata from the start
   outputPdf.setTitle("");
   outputPdf.setAuthor("");
   outputPdf.setSubject("");
@@ -75,7 +80,7 @@ async function compressPdfStrong(file: File, quality: number, dpi: number): Prom
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) {
-      throw new Error("Impossible d'obtenir le contexte canvas");
+      throw new Error(t ? t("canvasError") : "Unable to get canvas context");
     }
 
     canvas.width = Math.max(1, Math.floor(renderViewport.width));
@@ -90,7 +95,7 @@ async function compressPdfStrong(file: File, quality: number, dpi: number): Prom
       canvas.toBlob(resolve, "image/jpeg", jpegQuality)
     );
     if (!jpegBlob) {
-      throw new Error("Échec de l'encodage JPEG");
+      throw new Error(t ? t("jpegEncodingError") : "JPEG encoding failed");
     }
 
     const jpegBytes = await jpegBlob.arrayBuffer();
@@ -112,8 +117,6 @@ async function compressPdfStrong(file: File, quality: number, dpi: number): Prom
   const newBytes = await outputPdf.save({ useObjectStreams: true });
   const compressedBlob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
 
-  // If rasterization did not reduce the size (e.g. text-only PDFs), fall back
-  // to structure-only compression to avoid making the file larger.
   if (compressedBlob.size >= originalSize * 0.95) {
     return compressPdfStructure(file);
   }

@@ -1,9 +1,10 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,13 +12,6 @@ import { Copy, Check, RefreshCw } from "lucide-react";
 import { secureRandomInt, secureShuffle } from "@/lib/random";
 
 type SecretType = "uuid" | "api-key" | "token" | "password";
-
-const TYPE_LABELS: Record<SecretType, string> = {
-  uuid: "UUID v4",
-  "api-key": "Clé API",
-  token: "Token sécurisé",
-  password: "Mot de passe",
-};
 
 function generateUuid(): string {
   return crypto.randomUUID();
@@ -75,6 +69,7 @@ function generateSecret(type: SecretType, passwordLength: number): string {
 }
 
 export function SecretsTool() {
+  const t = useTranslations("tool.secrets");
   const [type, setType] = useState<SecretType>("uuid");
   const [count, setCount] = useState([5]);
   const [passwordLength, setPasswordLength] = useState([16]);
@@ -96,29 +91,29 @@ export function SecretsTool() {
 
   return (
     <ToolLayout
-      title="Générateur de secrets"
-      description="Générez des UUID, clés API, tokens et mots de passe forts."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <div className="space-y-4">
           <div>
-            <Label>Type de secret</Label>
+            <Label>{t("typeLabel")}</Label>
             <Select value={type} onValueChange={(v) => setType(v as SecretType)}>
               <SelectTrigger className="w-full sm:w-[260px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="uuid">UUID v4</SelectItem>
-                <SelectItem value="api-key">Clé API</SelectItem>
-                <SelectItem value="token">Token sécurisé</SelectItem>
-                <SelectItem value="password">Mot de passe</SelectItem>
+                <SelectItem value="uuid">{t("typeUuid")}</SelectItem>
+                <SelectItem value="api-key">{t("typeApiKey")}</SelectItem>
+                <SelectItem value="token">{t("typeToken")}</SelectItem>
+                <SelectItem value="password">{t("typePassword")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {type === "password" && (
             <div>
-              <Label>Longueur ({passwordLength[0]})</Label>
+              <Label>{t("lengthLabel", { value: passwordLength[0] })}</Label>
               <Slider
                 value={passwordLength}
                 onValueChange={setPasswordLength}
@@ -130,7 +125,7 @@ export function SecretsTool() {
           )}
 
           <div>
-            <Label>Nombre à générer ({count[0]})</Label>
+            <Label>{t("countLabel", { value: count[0] })}</Label>
             <Slider
               value={count}
               onValueChange={setCount}
@@ -143,7 +138,7 @@ export function SecretsTool() {
 
         <Button onClick={generateSecrets} className="w-full sm:w-auto">
           <RefreshCw className="h-4 w-4 mr-2" />
-          Générer
+          {t("action")}
         </Button>
 
         {secrets.length > 0 && (

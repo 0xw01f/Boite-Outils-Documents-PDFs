@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Upload, File, X } from "lucide-react";
 
@@ -25,6 +26,7 @@ export function FileDropZone({
   maxSizeMB = 100,
   onError,
 }: FileDropZoneProps) {
+  const t = useTranslations("dropZone");
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -44,7 +46,7 @@ export function FileDropZone({
       const droppedFiles = Array.from(e.dataTransfer.files);
       const validFiles = droppedFiles.filter((f) => {
         if (maxSizeMB && f.size > maxSizeMB * 1024 * 1024) {
-          onError?.(`Fichier trop volumineux : ${f.name} (max ${maxSizeMB} MB)`);
+          onError?.(t("tooLarge", { name: f.name, maxSize: maxSizeMB }));
           return false;
         }
         if (accept === "*") return true;
@@ -56,14 +58,14 @@ export function FileDropZone({
           return f.type === trimmed || f.name.endsWith(trimmed.replace("*", ""));
         });
       });
-      
+
       if (maxFiles && files.length + validFiles.length > maxFiles) {
         onFilesSelected([...files, ...validFiles].slice(0, maxFiles));
       } else {
         onFilesSelected(multiple ? [...files, ...validFiles] : validFiles.slice(0, 1));
       }
     },
-    [accept, multiple, onFilesSelected, files, maxFiles]
+    [accept, multiple, onFilesSelected, files, maxFiles, maxSizeMB, onError, t]
   );
 
   const handleInputChange = useCallback(
@@ -71,7 +73,7 @@ export function FileDropZone({
       const selectedFiles = Array.from(e.target.files || []);
       const validFiles = selectedFiles.filter((f) => {
         if (maxSizeMB && f.size > maxSizeMB * 1024 * 1024) {
-          onError?.(`Fichier trop volumineux : ${f.name} (max ${maxSizeMB} MB)`);
+          onError?.(t("tooLarge", { name: f.name, maxSize: maxSizeMB }));
           return false;
         }
         return true;
@@ -82,7 +84,7 @@ export function FileDropZone({
         onFilesSelected(multiple ? [...files, ...validFiles] : validFiles.slice(0, 1));
       }
     },
-    [multiple, onFilesSelected, files, maxFiles]
+    [multiple, onFilesSelected, files, maxFiles, maxSizeMB, onError, t]
   );
 
   return (
@@ -100,12 +102,8 @@ export function FileDropZone({
         onClick={() => document.getElementById("file-input")?.click()}
       >
         <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
-        <p className="text-sm font-medium">
-          Glissez-déposez vos fichiers ici
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          ou cliquez pour sélectionner
-        </p>
+        <p className="text-sm font-medium">{t("label")}</p>
+        <p className="text-xs text-muted-foreground mt-1">{t("hint")}</p>
         <input
           id="file-input"
           type="file"
@@ -127,7 +125,7 @@ export function FileDropZone({
                 <File className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 <span className="text-sm truncate">{file.name}</span>
                 <span className="text-xs text-muted-foreground flex-shrink-0">
-                  ({(file.size / 1024).toFixed(1)} KB)
+                  {t("size", { size: (file.size / 1024).toFixed(1) })}
                 </span>
               </div>
               {onRemoveFile && (

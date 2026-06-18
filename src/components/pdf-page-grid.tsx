@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Loader2, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +17,7 @@ interface PdfPageGridProps {
 }
 
 interface PageThumbnail {
-  index: number; // 0-based page index
+  index: number;
   url: string;
 }
 
@@ -30,12 +30,12 @@ export function PdfPageGrid({
   mode = "both",
   maxSelectable,
 }: PdfPageGridProps) {
+  const t = useTranslations("pageGrid");
   const [thumbnails, setThumbnails] = useState<PageThumbnail[]>([]);
   const [loading, setLoading] = useState(true);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Render thumbnails from PDF
   useEffect(() => {
     let cancelled = false;
 
@@ -51,7 +51,7 @@ export function PdfPageGrid({
         const bytes = await response.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
         if (pdf.numPages > 200) {
-          throw new Error("PDF trop volumineux (max 200 pages)");
+          throw new Error(t("tooManyPagesError", { max: 200 }));
         }
         const thumbs: PageThumbnail[] = [];
 
@@ -61,7 +61,7 @@ export function PdfPageGrid({
           const viewport = page.getViewport({ scale });
           const maxPixels = 4096 * 4096;
           if (viewport.width * viewport.height > maxPixels) {
-            throw new Error(`Dimensions de page trop grandes (page ${i})`);
+            throw new Error(t("pageTooLarge", { page: i }));
           }
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
@@ -86,10 +86,8 @@ export function PdfPageGrid({
 
     renderThumbnails();
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pdfUrl]);
+  }, [pdfUrl, t]);
 
-  // Get ordered thumbnails based on pageOrder (fallback to natural order if empty)
   const effectiveOrder = pageOrder.length > 0 ? pageOrder : thumbnails.map((t) => t.index);
   const orderedThumbnails = effectiveOrder
     .map((idx) => thumbnails.find((t) => t.index === idx))
@@ -118,12 +116,10 @@ export function PdfPageGrid({
     onSelectionChange([]);
   }, [onSelectionChange]);
 
-  // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, position: number) => {
     if (mode === "select") return;
     setDraggingIndex(position);
     e.dataTransfer.effectAllowed = "move";
-    // Required for Firefox
     e.dataTransfer.setData("text/plain", String(position));
   };
 
@@ -153,7 +149,7 @@ export function PdfPageGrid({
     return (
       <div className="flex items-center justify-center h-40 rounded-lg border bg-muted/30">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-sm text-muted-foreground">Chargement des pages...</span>
+        <span className="ml-2 text-sm text-muted-foreground">{t("loading")}</span>
       </div>
     );
   }
@@ -161,7 +157,7 @@ export function PdfPageGrid({
   if (thumbnails.length === 0) {
     return (
       <div className="text-center py-8 text-sm text-muted-foreground">
-        Impossible de charger les aperçus des pages.
+        {t("error")}
       </div>
     );
   }
@@ -174,13 +170,13 @@ export function PdfPageGrid({
       {showSelect && (
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" onClick={selectAll}>
-            Tout sélectionner
+            {t("selectAll")}
           </Button>
           <Button variant="outline" size="sm" onClick={deselectAll}>
-            Tout désélectionner
+            {t("deselectAll")}
           </Button>
           <span className="text-xs text-muted-foreground">
-            {selectedPages.length} page{selectedPages.length > 1 ? "s" : ""} sélectionnée{selectedPages.length > 1 ? "s" : ""}
+            {t("selected", { count: selectedPages.length })}
           </span>
         </div>
       )}
@@ -209,12 +205,10 @@ export function PdfPageGrid({
               )}
               onClick={() => toggleSelection(thumb.index)}
             >
-              {/* Page number badge */}
               <div className="absolute top-1 left-1 z-10 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
                 {thumb.index + 1}
               </div>
 
-              {/* Drag handle */}
               {showReorder && (
                 <div
                   className="absolute top-1 right-1 z-10 p-0.5 bg-black/60 text-white rounded cursor-grab active:cursor-grabbing"
@@ -224,7 +218,6 @@ export function PdfPageGrid({
                 </div>
               )}
 
-              {/* Checkbox */}
               {showSelect && (
                 <div
                   className="absolute bottom-1 left-1 z-10 flex items-center justify-center w-5 h-5 rounded border bg-white/90"
@@ -239,10 +232,9 @@ export function PdfPageGrid({
                 </div>
               )}
 
-              {/* Thumbnail */}
               <img
                 src={thumb.url}
-                alt={`Page ${thumb.index + 1}`}
+                alt={t("pageAlt", { page: thumb.index + 1 })}
                 className="w-full aspect-[3/4] object-cover"
                 draggable={false}
               />

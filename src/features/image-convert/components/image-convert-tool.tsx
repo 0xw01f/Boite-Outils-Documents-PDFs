@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
@@ -11,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PreviewPanel } from "@/components/preview-panel";
 
 export function ImageConvertTool() {
+  const t = useTranslations("tool.convertImage");
   const [files, setFiles] = useState<File[]>([]);
   const [format, setFormat] = useState("png");
   const [processing, setProcessing] = useState(false);
@@ -31,7 +34,7 @@ export function ImageConvertTool() {
 
   const convertImage = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner une image.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -44,7 +47,7 @@ export function ImageConvertTool() {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = () => reject(new Error("Impossible de lire l'image"));
+        reader.onerror = () => reject(new Error(t("readError")));
         reader.readAsDataURL(file);
       });
 
@@ -71,8 +74,8 @@ export function ImageConvertTool() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la conversion.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -80,8 +83,8 @@ export function ImageConvertTool() {
 
   return (
     <ToolLayout
-      title="Convertir le format"
-      description="Changez le format de vos images (JPG, PNG, WebP)."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -93,15 +96,15 @@ export function ImageConvertTool() {
 
         {files.length > 0 && (
           <div className="space-y-3">
-            <Label>Format de sortie</Label>
+            <Label>{t("formatLabel")}</Label>
             <Select value={format} onValueChange={setFormat}>
               <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="png">PNG</SelectItem>
-                <SelectItem value="jpg">JPG</SelectItem>
-                <SelectItem value="webp">WebP</SelectItem>
+                <SelectItem value="png">{t("formatPng")}</SelectItem>
+                <SelectItem value="jpg">{t("formatJpg")}</SelectItem>
+                <SelectItem value="webp">{t("formatWebp")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -119,7 +122,7 @@ export function ImageConvertTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Conversion..." : "Convertir"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

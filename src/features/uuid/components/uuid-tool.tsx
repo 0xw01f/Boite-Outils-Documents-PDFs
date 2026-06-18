@@ -1,14 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Copy, Check, RefreshCw } from "lucide-react";
 
 export function UuidTool() {
+  const t = useTranslations("tool.uuid");
   const [count, setCount] = useState([5]);
   const [uuids, setUuids] = useState<string[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -30,12 +32,12 @@ export function UuidTool() {
 
   return (
     <ToolLayout
-      title="Générateur UUID"
-      description="Générez des identifiants universels uniques (UUID v4)."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <div>
-          <Label>Nombre à générer ({count[0]})</Label>
+          <Label>{t("countLabel", { value: count[0] })}</Label>
           <Slider
             value={count}
             onValueChange={setCount}
@@ -47,7 +49,7 @@ export function UuidTool() {
 
         <Button onClick={generateUuids} className="w-full sm:w-auto">
           <RefreshCw className="h-4 w-4 mr-2" />
-          Générer
+          {t("action")}
         </Button>
 
         {uuids.length > 0 && (

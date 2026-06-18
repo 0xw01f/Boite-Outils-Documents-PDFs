@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -12,6 +14,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 export function ImagesToPdfTool() {
+  const t = useTranslations("tool.imagesToPdf");
+  const tCommon = useTranslations("common");
   const [files, setFiles] = useState<File[]>([]);
   const [fitToPage, setFitToPage] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -66,7 +70,7 @@ export function ImagesToPdfTool() {
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
           if (!ctx) {
-            reject(new Error("Impossible d'obtenir le contexte canvas"));
+            reject(new Error(t("canvasError")));
             return;
           }
 
@@ -80,17 +84,17 @@ export function ImagesToPdfTool() {
           resolve({ dataUrl, format: "JPEG" });
         };
 
-        img.onerror = () => reject(new Error(`Impossible de charger l'image ${file.name}`));
+        img.onerror = () => reject(new Error(t("imageLoadError", { name: file.name })));
         img.src = originalDataUrl;
       };
-      reader.onerror = () => reject(new Error(`Impossible de lire ${file.name}`));
+      reader.onerror = () => reject(new Error(t("fileReadError", { name: file.name })));
       reader.readAsDataURL(file);
     });
   };
 
   const convertToPdf = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner au moins une image.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -111,12 +115,12 @@ export function ImagesToPdfTool() {
         const img = new Image();
         await new Promise<void>((resolve, reject) => {
           img.onload = () => resolve();
-          img.onerror = () => reject(new Error(`Impossible de charger ${file.name}`));
+          img.onerror = () => reject(new Error(t("imageLoadError", { name: file.name })));
           img.src = dataUrl;
         });
 
         if (img.width === 0 || img.height === 0) {
-          throw new Error(`Image invalide : ${file.name} (dimensions nulles)`);
+          throw new Error(t("invalidImageError", { name: file.name }));
         }
 
         let width = img.width;
@@ -136,24 +140,29 @@ export function ImagesToPdfTool() {
 
       pdf.setProperties({ title: "", subject: "", author: "", keywords: "", creator: "" });
       // Strip jsPDF metadata via internal API
-      const internal = pdf.internal as any;
-      if (internal?.getPDFDocument?.().info) {
+      type JsPdfInternal = {
+        getPDFDocument?: () => { info?: Record<string, string> };
+      };
+      const internal = pdf.internal as unknown as JsPdfInternal;
+      if (internal.getPDFDocument) {
         const info = internal.getPDFDocument().info;
-        info.Title = "";
-        info.Subject = "";
-        info.Author = "";
-        info.Keywords = "";
-        info.Creator = "";
-        info.Producer = "";
+        if (info) {
+          info.Title = "";
+          info.Subject = "";
+          info.Author = "";
+          info.Keywords = "";
+          info.Creator = "";
+          info.Producer = "";
+        }
       }
 
       const blob = pdf.output("blob");
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(`Erreur lors de la conversion: ${err?.message || "Vérifiez le format des images."}`);
+      setError(t("error", { message: err instanceof Error ? err.message : "" }));
     } finally {
       setProcessing(false);
     }
@@ -161,8 +170,8 @@ export function ImagesToPdfTool() {
 
   return (
     <ToolLayout
-      title="Images → PDF"
-      description="Combinez plusieurs images en un seul fichier PDF."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -182,12 +191,12 @@ export function ImagesToPdfTool() {
                 onCheckedChange={setFitToPage}
               />
               <Label htmlFor="fit-to-page" className="cursor-pointer">
-                Adapter les images à la page A4
+                {t("fitA4")}
               </Label>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Ordre des images :</p>
+              <p className="text-sm font-medium">{tCommon("imageOrder")}</p>
               {files.map((file, index) => (
                 <div
                   key={`${file.name}-${index}`}
@@ -245,7 +254,7 @@ export function ImagesToPdfTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Conversion..." : "Convertir en PDF"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -11,6 +13,7 @@ import { PreviewPanel } from "@/components/preview-panel";
 import { PdfPageGrid } from "@/components/pdf-page-grid";
 
 export function PdfExtractTool() {
+  const t = useTranslations("tool.extractPages");
   const [files, setFiles] = useState<File[]>([]);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [selectedPages, setSelectedPages] = useState<number[]>([]);
@@ -41,18 +44,18 @@ export function PdfExtractTool() {
       const count = pdf.getPageCount();
       setPageOrder(Array.from({ length: count }, (_, i) => i));
     } catch {
-      setError("Impossible de lire le PDF.");
+      setError(t("loadError"));
     }
-  }, []);
+  }, [t]);
 
   const extractPages = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
     if (selectedPages.length === 0) {
-      setError("Veuillez sélectionner au moins une page à extraire.");
+      setError(t("noPagesError"));
       return;
     }
 
@@ -67,7 +70,7 @@ export function PdfExtractTool() {
       const orderedSelected = pageOrder.filter((p) => selectedPages.includes(p));
 
       if (orderedSelected.length === 0) {
-        setError("Aucune page valide trouvée.");
+        setError(t("noValidPagesError"));
         return;
       }
 
@@ -85,8 +88,8 @@ export function PdfExtractTool() {
       const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de l'extraction.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -94,8 +97,8 @@ export function PdfExtractTool() {
 
   return (
     <ToolLayout
-      title="Extraire des pages"
-      description="Extrayez des pages spécifiques d'un PDF dans un nouveau fichier."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -128,7 +131,7 @@ export function PdfExtractTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Traitement..." : "Extraire"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

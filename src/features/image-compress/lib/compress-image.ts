@@ -1,6 +1,7 @@
 "use client";
 
 import imageCompression from "browser-image-compression";
+import { useTranslations } from "next-intl";
 
 export type CompressionLevel = "light" | "medium" | "strong" | "custom";
 
@@ -12,31 +13,28 @@ export interface ImageCompressOptions {
 
 const levelPresets: Record<
   Exclude<CompressionLevel, "custom">,
-  { quality: number; maxWidthOrHeight: number; sizeRatio: number; label: string }
+  { quality: number; maxWidthOrHeight: number; sizeRatio: number }
 > = {
   light: {
     quality: 90,
     maxWidthOrHeight: 4096,
     sizeRatio: 0.8,
-    label: "Léger",
   },
   medium: {
     quality: 75,
     maxWidthOrHeight: 2048,
     sizeRatio: 0.35,
-    label: "Moyen (recommandé)",
   },
   strong: {
     quality: 60,
     maxWidthOrHeight: 1600,
     sizeRatio: 0.12,
-    label: "Fort",
   },
 };
 
-export function getLevelLabel(level: CompressionLevel): string {
-  if (level === "custom") return "Personnalisé";
-  return levelPresets[level].label;
+export function getLevelLabel(level: CompressionLevel, t: ReturnType<typeof useTranslations>): string {
+  if (level === "custom") return t("levelCustom");
+  return t(`level${level.charAt(0).toUpperCase() + level.slice(1)}`);
 }
 
 export async function compressImage(file: File, options: ImageCompressOptions): Promise<File> {

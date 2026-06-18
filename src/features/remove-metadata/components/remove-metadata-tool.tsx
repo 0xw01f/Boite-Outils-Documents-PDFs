@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -9,6 +11,8 @@ import { Download, AlertCircle, Eraser } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function RemoveMetadataTool() {
+  const t = useTranslations("tool.removeMetadata");
+  const tCommon = useTranslations("common");
   const [files, setFiles] = useState<File[]>([]);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +32,7 @@ export function RemoveMetadataTool() {
 
   const removeMetadata = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -53,8 +57,8 @@ export function RemoveMetadataTool() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la suppression des métadonnées.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -62,8 +66,8 @@ export function RemoveMetadataTool() {
 
   return (
     <ToolLayout
-      title="Supprimer les métadonnées"
-      description="Nettoyez les métadonnées d'un PDF (auteur, titre, etc.)."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -87,14 +91,14 @@ export function RemoveMetadataTool() {
             className="w-full sm:w-auto"
           >
             <Eraser className="h-4 w-4 mr-2" />
-            {processing ? "Traitement..." : "Nettoyer"}
+            {processing ? t("processing") : t("action")}
           </Button>
 
           {resultUrl && (
             <Button variant="outline" asChild className="w-full sm:w-auto">
               <a href={resultUrl} download="cleaned.pdf">
                 <Download className="h-4 w-4 mr-2" />
-                Télécharger
+                {tCommon("download")}
               </a>
             </Button>
           )}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
@@ -12,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PreviewPanel } from "@/components/preview-panel";
 
 export function ImageResizeTool() {
+  const t = useTranslations("tool.resizeImage");
   const [files, setFiles] = useState<File[]>([]);
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
@@ -34,7 +37,7 @@ export function ImageResizeTool() {
 
   const resizeImage = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner une image.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -42,7 +45,7 @@ export function ImageResizeTool() {
     const targetHeight = parseInt(height);
 
     if (isNaN(targetWidth) || targetWidth <= 0) {
-      setError("Veuillez entrer une largeur valide.");
+      setError(t("widthError"));
       return;
     }
 
@@ -55,7 +58,7 @@ export function ImageResizeTool() {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = () => reject(new Error("Impossible de lire l'image"));
+        reader.onerror = () => reject(new Error(t("readError")));
         reader.readAsDataURL(file);
       });
 
@@ -75,7 +78,7 @@ export function ImageResizeTool() {
           newHeight = Math.round(targetWidth / ratio);
         }
       } else if (isNaN(targetHeight) || targetHeight <= 0) {
-        setError("Veuillez entrer une hauteur valide.");
+        setError(t("heightError"));
         return;
       }
 
@@ -92,8 +95,8 @@ export function ImageResizeTool() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors du redimensionnement.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -101,8 +104,8 @@ export function ImageResizeTool() {
 
   return (
     <ToolLayout
-      title="Redimensionner"
-      description="Changez les dimensions de vos images."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -120,28 +123,28 @@ export function ImageResizeTool() {
                 checked={maintainRatio}
                 onCheckedChange={setMaintainRatio}
               />
-              <Label htmlFor="ratio">Conserver le ratio</Label>
+              <Label htmlFor="ratio">{t("keepRatio")}</Label>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="width">Largeur (px)</Label>
+                <Label htmlFor="width">{t("widthLabel")}</Label>
                 <Input
                   id="width"
                   type="number"
                   value={width}
                   onChange={(e) => setWidth(e.target.value)}
-                  placeholder="800"
+                  placeholder={t("widthPlaceholder")}
                 />
               </div>
               <div>
-                <Label htmlFor="height">Hauteur (px)</Label>
+                <Label htmlFor="height">{t("heightLabel")}</Label>
                 <Input
                   id="height"
                   type="number"
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  placeholder="600"
+                  placeholder={t("heightPlaceholder")}
                   disabled={maintainRatio}
                 />
               </div>
@@ -161,7 +164,7 @@ export function ImageResizeTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Traitement..." : "Redimensionner"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

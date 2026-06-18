@@ -1,0 +1,574 @@
+{
+  "metadata": {
+    "title": "Boîte à Outils PDF & Documents — 100% local & sécurisé",
+    "titleTemplate": "%s | Boîte à Outils PDF & Documents",
+    "description": "Outils PDF et images gratuits, 100% locaux et sécurisés. Fusionnez, divisez, compressez, protégez, convertissez vos documents sans envoyer de données sur Internet.",
+    "keywords": ["PDF", "Outils PDF", "Fusionner PDF", "Diviser PDF", "Compresser PDF", "Filigrane PDF", "Convertir PDF", "Sécurité PDF", "100% local", "Offline"],
+    "author": "Argus Labs",
+    "siteName": "Boîte à Outils PDF & Documents",
+    "locale": "fr_FR"
+  },
+  "home": {
+    "title": "Boîte à Outils PDF & Documents",
+    "subtitle": "Tous les outils s'exécutent localement dans votre navigateur. Vos fichiers ne quittent jamais votre appareil."
+  },
+  "sidebar": {
+    "brand": "PDF & Docs",
+    "tagline": "Outils locaux 100%",
+    "badge": "100% local",
+    "privacy": "Aucun fichier n'est jamais envoyé sur un serveur. Tout le traitement se fait dans votre navigateur.",
+    "legal": "Mentions légales & Confidentialité",
+    "copyright": "© {year} made by {author}"
+  },
+  "categories": {
+    "pdf": "PDF",
+    "images": "Images",
+    "security": "Sécurité",
+    "utilities": "Utilitaires"
+  },
+  "tools": {
+    "merge-pdf": { "name": "Fusionner PDF", "description": "Combinez plusieurs PDF en un seul" },
+    "split-pdf": { "name": "Diviser PDF", "description": "Séparez un PDF en plusieurs fichiers" },
+    "compress-pdf": { "name": "Compresser PDF", "description": "Réduisez la taille de vos PDF" },
+    "rotate-pdf": { "name": "Rotation PDF", "description": "Faites pivoter les pages" },
+    "delete-pages": { "name": "Supprimer pages", "description": "Supprimez des pages d'un PDF" },
+    "reorder-pages": { "name": "Réorganiser pages", "description": "Changez l'ordre des pages" },
+    "extract-pages": { "name": "Extraire pages", "description": "Extrayez des pages spécifiques" },
+    "pdf-to-images": { "name": "PDF -> Images", "description": "Convertissez un PDF en images" },
+    "images-to-pdf": { "name": "Images -> PDF", "description": "Combinez des images en PDF" },
+    "compress-image": { "name": "Compresser Image", "description": "Réduisez la taille sans perdre en qualité" },
+    "convert-image": { "name": "Convertir Format", "description": "Changez le format de vos images" },
+    "resize-image": { "name": "Redimensionner", "description": "Changez les dimensions de vos images" },
+    "metadata-manager": { "name": "Métadonnées PDF", "description": "Lire, modifier ou supprimer" },
+    "remove-metadata": { "name": "Supprimer les métadonnées", "description": "Nettoyez les métadonnées d'un PDF" },
+    "secrets": { "name": "Générateur de secrets", "description": "UUID, clés API, tokens, mots de passe" },
+    "hash": { "name": "Hash", "description": "Calculez le hash d'un texte ou fichier" },
+    "json-formatter": { "name": "JSON Formatter", "description": "Formatez et validez du JSON" },
+    "twitter-video": { "name": "Téléchargeur X", "description": "Téléchargez les vidéos de X/Twitter" }
+  },
+  "common": {
+    "download": "Télécharger",
+    "close": "Fermer",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "back": "Retour à l'accueil",
+    "processing": "Traitement en cours...",
+    "error": "Une erreur est survenue.",
+    "page": "Page {page}",
+    "pageCount": "Page {current} / {total}",
+    "sizeKB": "{size} KB",
+    "selectFile": "Sélectionner un fichier",
+    "selectFiles": "Sélectionner des fichiers",
+    "fileOrder": "Ordre des fichiers :",
+    "imageOrder": "Ordre des images :",
+    "originalSize": "Taille originale",
+    "compressedSize": "Taille compressée",
+    "reduction": "Réduction : {percentage}%",
+    "result": "Résultat",
+    "preview": "Aperçu",
+    "gallery": "Images",
+    "text": "Texte",
+    "file": "Fichier",
+    "generate": "Générer",
+    "apply": "Appliquer les modifications",
+    "clearAll": "Tout effacer",
+    "format": "Formater",
+    "calculate": "Calculer",
+    "rotate": "Tourner",
+    "compress": "Compresser",
+    "convert": "Convertir",
+    "extract": "Extraire",
+    "delete": "Supprimer",
+    "reorder": "Réorganiser",
+    "merge": "Fusionner",
+    "resize": "Redimensionner",
+    "clean": "Nettoyer",
+    "recover": "Récupérer",
+    "openLink": "Ouvrir le lien direct"
+  },
+  "dropZone": {
+    "label": "Glissez-déposez vos fichiers ici",
+    "hint": "ou cliquez pour sélectionner",
+    "tooLarge": "Fichier trop volumineux : {name} (max {maxSize} MB)",
+    "size": "({size} KB)"
+  },
+  "pageGrid": {
+    "loading": "Chargement des pages...",
+    "error": "Impossible de charger les aperçus des pages.",
+    "tooManyPagesError": "PDF trop volumineux (max {max} pages)",
+    "pageTooLarge": "Dimensions de page trop grandes (page {page})",
+    "selectAll": "Tout sélectionner",
+    "deselectAll": "Tout désélectionner",
+    "selected": "{count, plural, one {# page sélectionnée} other {# pages sélectionnées}}",
+    "pageAlt": "Page {page}"
+  },
+  "previewPanel": {
+    "title": "Aperçu avant téléchargement",
+    "download": "Télécharger",
+    "previewTab": "Aperçu",
+    "galleryTab": "Images ({count})",
+    "pdfLoading": "Chargement de l'aperçu...",
+    "pageCount": "Page {current} / {total}",
+    "tooManyPagesError": "PDF trop volumineux (max {max} pages pour l'aperçu)",
+    "pageTooLarge": "Dimensions de page trop grandes (page {page})",
+    "pdfError": "L'aperçu du PDF n'a pas pu être généré.",
+    "downloadToView": "Télécharger pour visualiser",
+    "imageAlt": "Aperçu",
+    "pageAlt": "Page {page}",
+    "imagesSummary": "{count, plural, one {# image générée} other {# images générées}}. Les images sont compressées dans un fichier ZIP.",
+    "galleryPage": "Page {page}"
+  },
+  "tool": {
+    "mergePdf": {
+      "title": "Fusionner des PDF",
+      "description": "Combinez plusieurs fichiers PDF en un seul document. Réorganisez l'ordre des fichiers si nécessaire.",
+      "minFilesError": "Veuillez sélectionner au moins 2 fichiers PDF à fusionner.",
+      "processing": "Fusion en cours...",
+      "action": "Fusionner les PDF",
+      "error": "Erreur lors de la fusion des PDF. Vérifiez que les fichiers ne sont pas corrompus."
+    },
+    "splitPdf": {
+      "title": "Diviser un PDF",
+      "description": "Extrayez des pages spécifiques d'un PDF. Sélectionnez les pages visuellement.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "noPagesError": "Veuillez sélectionner au moins une page à extraire.",
+      "noValidPagesError": "Aucune page valide trouvée.",
+      "loadError": "Impossible de lire le PDF.",
+      "processing": "Traitement en cours...",
+      "action": "Extraire les pages sélectionnées",
+      "error": "Erreur lors de la division du PDF."
+    },
+    "compressPdf": {
+      "title": "Compresser un PDF",
+      "description": "Réduisez fortement la taille d'un PDF en récompressant ses images.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "pdfJsBrowserError": "pdfjs-dist ne peut être chargé que dans le navigateur",
+      "canvasError": "Impossible d'obtenir le contexte canvas",
+      "jpegEncodingError": "Échec de l'encodage JPEG",
+      "modeLabel": "Mode de compression",
+      "modeStrong": "Fort (recommandé)",
+      "modeStructure": "Structure uniquement",
+      "strongHint": "Recompresse chaque page en image JPEG. Gains importants mais le texte n'est plus sélectionnable.",
+      "structureHint": "Garde le texte sélectionnable mais ne compresse que la structure (métadonnées, streams).",
+      "qualityLabel": "Qualité JPEG ({value}%)",
+      "qualityHint": "60-80% offre le meilleur compromis taille / qualité.",
+      "dpiLabel": "Résolution de sortie ({value} DPI)",
+      "dpiHint": "150 DPI suffit pour la plupart des usages web et mail.",
+      "resultTitle": "Résultat de la compression :",
+      "processing": "Compression...",
+      "action": "Compresser",
+      "error": "Erreur lors de la compression : {message}. Vérifiez que le PDF est valide."
+    },
+    "rotatePdf": {
+      "title": "Rotation PDF",
+      "description": "Faites pivoter toutes les pages d'un PDF dans le sens horaire.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "angleLabel": "Angle de rotation",
+      "angle90": "90° (horaire)",
+      "angle180": "180°",
+      "angle270": "270° (anti-horaire)",
+      "processing": "Traitement...",
+      "action": "Tourner le PDF",
+      "error": "Erreur lors de la rotation du PDF."
+    },
+    "deletePages": {
+      "title": "Supprimer des pages",
+      "description": "Supprimez des pages spécifiques d'un PDF.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "noPagesError": "Veuillez sélectionner au moins une page à supprimer.",
+      "allPagesError": "Vous ne pouvez pas supprimer toutes les pages.",
+      "processing": "Traitement...",
+      "action": "Supprimer les pages",
+      "error": "Erreur lors de la suppression des pages."
+    },
+    "reorderPages": {
+      "title": "Réorganiser les pages",
+      "description": "Changez l'ordre des pages d'un PDF par glisser-déposer.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "loadError": "Impossible de lire le PDF.",
+      "processing": "Traitement...",
+      "action": "Réorganiser",
+      "error": "Erreur lors de la réorganisation."
+    },
+    "extractPages": {
+      "title": "Extraire des pages",
+      "description": "Extrayez des pages spécifiques d'un PDF dans un nouveau fichier.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "noPagesError": "Veuillez sélectionner au moins une page à extraire.",
+      "noValidPagesError": "Aucune page valide trouvée.",
+      "loadError": "Impossible de lire le PDF.",
+      "processing": "Traitement...",
+      "action": "Extraire",
+      "error": "Erreur lors de l'extraction."
+    },
+    "pdfToImages": {
+      "title": "PDF → Images",
+      "description": "Convertissez chaque page d'un PDF en images de haute qualité.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "tooManyPagesError": "PDF trop volumineux (max 200 pages)",
+      "formatLabel": "Format de sortie",
+      "formatPng": "PNG (transparent)",
+      "formatJpg": "JPG (léger)",
+      "formatWebp": "WebP (moderne)",
+      "qualityLabel": "Qualité ({value}%)",
+      "processing": "Conversion...",
+      "action": "Convertir en images",
+      "error": "Erreur lors de la conversion : {message}. Vérifiez que le PDF est valide."
+    },
+    "imagesToPdf": {
+      "title": "Images → PDF",
+      "description": "Combinez plusieurs images en un seul fichier PDF.",
+      "noFileError": "Veuillez sélectionner au moins une image.",
+      "fitA4": "Adapter les images à la page A4",
+      "canvasError": "Impossible d'obtenir le contexte canvas",
+      "imageLoadError": "Impossible de charger l'image {name}",
+      "fileReadError": "Impossible de lire {name}",
+      "invalidImageError": "Image invalide : {name} (dimensions nulles)",
+      "processing": "Conversion...",
+      "action": "Convertir en PDF",
+      "error": "Erreur lors de la conversion : {message}. Vérifiez le format des images."
+    },
+    "compressImage": {
+      "title": "Compresser une image",
+      "description": "Réduisez la taille de vos images avec des profils ciblés.",
+      "noFileError": "Veuillez sélectionner une image.",
+      "levelLabel": "Niveau de compression",
+      "levelLight": "Léger (perte minimale)",
+      "levelMedium": "Moyen (recommandé)",
+      "levelStrong": "Fort (taille minimale)",
+      "levelCustom": "Personnalisé",
+      "lightHint": "Réduit légèrement la qualité et la résolution.",
+      "mediumHint": "Bon compromis pour le web, le mail et le stockage.",
+      "strongHint": "Réduit fortement la taille. Idéal pour les aperçus.",
+      "customHint": "Vous contrôlez manuellement la qualité.",
+      "qualityLabel": "Qualité ({value}%)",
+      "convertPngToJpeg": "Convertir PNG → JPEG",
+      "convertHint": "Souvent 5 à 10× plus léger sur les photos sans transparence.",
+      "resultTitle": "Résultat — profil {level} :",
+      "processing": "Compression...",
+      "action": "Compresser",
+      "error": "Erreur lors de la compression : {message}. Vérifiez le format de l'image."
+    },
+    "convertImage": {
+      "title": "Convertir le format",
+      "description": "Changez le format de vos images (JPG, PNG, WebP).",
+      "noFileError": "Veuillez sélectionner une image.",
+      "readError": "Impossible de lire l'image",
+      "formatLabel": "Format de sortie",
+      "formatPng": "PNG",
+      "formatJpg": "JPG",
+      "formatWebp": "WebP",
+      "processing": "Conversion...",
+      "action": "Convertir",
+      "error": "Erreur lors de la conversion."
+    },
+    "resizeImage": {
+      "title": "Redimensionner",
+      "description": "Changez les dimensions de vos images.",
+      "noFileError": "Veuillez sélectionner une image.",
+      "readError": "Impossible de lire l'image",
+      "widthError": "Veuillez entrer une largeur valide.",
+      "heightError": "Veuillez entrer une hauteur valide.",
+      "keepRatio": "Conserver le ratio",
+      "widthLabel": "Largeur (px)",
+      "widthPlaceholder": "800",
+      "heightLabel": "Hauteur (px)",
+      "heightPlaceholder": "600",
+      "processing": "Traitement...",
+      "action": "Redimensionner",
+      "error": "Erreur lors du redimensionnement."
+    },
+    "metadataManager": {
+      "title": "Métadonnées PDF",
+      "description": "Visualisez, modifiez ou supprimez les métadonnées de vos PDF.",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "loadError": "Impossible de lire les métadonnées du PDF.",
+      "viewTab": "Visualiser",
+      "editTab": "Modifier",
+      "modified": "modifié",
+      "titleLabel": "Titre",
+      "authorLabel": "Auteur",
+      "subjectLabel": "Sujet",
+      "keywordsLabel": "Mots-clés",
+      "creatorLabel": "Créateur",
+      "producerLabel": "Producteur",
+      "empty": "—",
+      "creationDateLabel": "Date de création",
+      "modificationDateLabel": "Date de modification",
+      "editHint": "Modifiez les champs ci-dessous puis cliquez sur \"Appliquer les modifications\".",
+      "emptyHint": "Laissez un champ vide pour le supprimer.",
+      "titlePlaceholder": "Titre du document",
+      "authorPlaceholder": "Nom de l'auteur",
+      "subjectPlaceholder": "Sujet du document",
+      "keywordsPlaceholder": "mot1, mot2, mot3",
+      "creatorPlaceholder": "Logiciel créateur",
+      "producerPlaceholder": "Logiciel producteur",
+      "processing": "Application...",
+      "action": "Appliquer les modifications",
+      "clear": "Tout effacer",
+      "error": "Erreur lors de la modification des métadonnées."
+    },
+    "removeMetadata": {
+      "title": "Supprimer les métadonnées",
+      "description": "Nettoyez les métadonnées d'un PDF (auteur, titre, etc.).",
+      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "processing": "Traitement...",
+      "action": "Nettoyer",
+      "error": "Erreur lors de la suppression des métadonnées."
+    },
+    "hash": {
+      "title": "Hash",
+      "description": "Calculez l'empreinte numérique d'un texte ou d'un fichier avec plusieurs algorithmes.",
+      "info": "Un hash est une empreinte unique générée à partir d'un texte ou d'un fichier. Elle sert à vérifier l'intégrité d'un document (détecter toute modification) ou à comparer deux fichiers sans les ouvrir. Même un changement minuscule dans le texte de départ produit un hash complètement différent.",
+      "textTab": "Texte",
+      "fileTab": "Fichier",
+      "textLabel": "Texte à hasher",
+      "textPlaceholder": "Entrez le texte...",
+      "fileLabel": "Fichier à hasher",
+      "fileInfo": "{name} ({size} KB)",
+      "md5Unavailable": "MD5 non disponible en navigateur (utilisez SHA-256)",
+      "errorResult": "Erreur",
+      "processing": "Calcul...",
+      "action": "Calculer tous les hashs"
+    },
+    "secrets": {
+      "title": "Générateur de secrets",
+      "description": "Générez des UUID, clés API, tokens et mots de passe forts.",
+      "typeLabel": "Type de secret",
+      "typeUuid": "UUID v4",
+      "typeApiKey": "Clé API",
+      "typeToken": "Token sécurisé",
+      "typePassword": "Mot de passe",
+      "lengthLabel": "Longueur ({value})",
+      "countLabel": "Nombre à générer ({value})",
+      "action": "Générer"
+    },
+    "uuid": {
+      "title": "Générateur UUID",
+      "description": "Générez des identifiants universels uniques (UUID v4).",
+      "countLabel": "Nombre à générer ({value})",
+      "action": "Générer"
+    },
+    "jsonFormatter": {
+      "title": "JSON Formatter",
+      "description": "Formatez et validez du JSON.",
+      "noInputError": "Veuillez entrer ou importer du JSON.",
+      "invalidError": "JSON invalide. Vérifiez la syntaxe.",
+      "readError": "Impossible de lire le fichier.",
+      "textTab": "Texte",
+      "fileTab": "Fichier",
+      "jsonLabel": "JSON",
+      "jsonPlaceholder": "{\"exemple\": \"valeur\", \"nombre\": 123}",
+      "fileLabel": "Fichier JSON",
+      "fileImported": "Fichier importé. Cliquez sur Formater pour valider.",
+      "compact": "Format compact",
+      "action": "Formater",
+      "resultLabel": "Résultat :"
+    },
+    "twitterVideo": {
+      "title": "Téléchargeur X / Twitter",
+      "description": "Collez le lien d'un post pour récupérer la vidéo en MP4.",
+      "noUrlError": "Veuillez coller l'URL du post X/Twitter.",
+      "apiError": "Une erreur est survenue.",
+      "networkError": "Erreur réseau. Vérifiez votre connexion.",
+      "urlLabel": "Lien du post X / Twitter",
+      "urlPlaceholder": "https://x.com/utilisateur/status/1234567890123456789",
+      "urlHint": "Exemple : https://x.com/elonmusk/status/1800000000000000000",
+      "processing": "Analyse...",
+      "action": "Récupérer",
+      "previewAlt": "Aperçu",
+      "downloadsTitle": "Téléchargements disponibles",
+      "bitrate": "{bitrate} kbps",
+      "mp4": "MP4"
+    }
+  },
+  "seo": {
+    "common": {
+      "keywords": ["PDF", "100% local", "offline", "navigateur", "Argus Labs"]
+    },
+    "tools": {
+      "merge-pdf": {
+        "title": "Fusionner PDF — Combiner plusieurs fichiers PDF",
+        "description": "Fusionnez plusieurs fichiers PDF en un seul document. 100% local, aucune donnée envoyée sur Internet.",
+        "keywords": ["fusionner PDF", "combiner PDF", "assembler PDF", "union PDF"]
+      },
+      "split-pdf": {
+        "title": "Diviser PDF — Séparer un PDF en plusieurs fichiers",
+        "description": "Divisez un fichier PDF en plusieurs documents. Extraction par page, intervalle ou plage. 100% local.",
+        "keywords": ["diviser PDF", "séparer PDF", "extraire pages PDF", "découper PDF"]
+      },
+      "compress-pdf": {
+        "title": "Compresser PDF — Réduire la taille d'un PDF",
+        "description": "Réduisez la taille de vos fichiers PDF sans perte de qualité. Compression locale dans le navigateur.",
+        "keywords": ["compresser PDF", "réduire taille PDF", "optimiser PDF", "PDF léger"]
+      },
+      "rotate-pdf": {
+        "title": "Rotation PDF — Pivoter les pages d'un PDF",
+        "description": "Faites pivoter toutes les pages d'un PDF de 90°, 180° ou 270°. Traitement 100% local.",
+        "keywords": ["rotation PDF", "pivoter PDF", "tourner PDF", "orientation PDF"]
+      },
+      "delete-pages": {
+        "title": "Supprimer des pages d'un PDF",
+        "description": "Supprimez des pages spécifiques d'un fichier PDF. Visualisez et sélectionnez les pages à supprimer.",
+        "keywords": ["supprimer pages PDF", "retirer pages PDF", "enlever pages PDF"]
+      },
+      "reorder-pages": {
+        "title": "Réorganiser les pages d'un PDF",
+        "description": "Changez l'ordre des pages d'un PDF par glisser-déposer. Réorganisation visuelle 100% locale.",
+        "keywords": ["réorganiser PDF", "réordonner pages PDF", "trier pages PDF", "ordre pages PDF"]
+      },
+      "extract-pages": {
+        "title": "Extraire des pages d'un PDF",
+        "description": "Extrayez des pages spécifiques d'un PDF pour créer un nouveau document. Sélection visuelle des pages.",
+        "keywords": ["extraire pages PDF", "isoler pages PDF", "pages spécifiques PDF"]
+      },
+      "pdf-to-images": {
+        "title": "PDF vers Images — Convertir un PDF en images",
+        "description": "Convertissez chaque page d'un PDF en image PNG ou JPEG. Export local sans serveur.",
+        "keywords": ["PDF vers images", "convertir PDF image", "PDF en PNG", "PDF en JPEG"]
+      },
+      "images-to-pdf": {
+        "title": "Images vers PDF — Convertir des images en PDF",
+        "description": "Combinez plusieurs images (JPG, PNG, WebP) en un seul fichier PDF. Réordonnez par glisser-déposer.",
+        "keywords": ["images vers PDF", "JPG en PDF", "PNG en PDF", "convertir images PDF"]
+      },
+      "compress-image": {
+        "title": "Compresser Image — Réduire la taille d'une image",
+        "description": "Réduisez la taille de vos images JPG, PNG, WebP sans perte visible. Compression locale.",
+        "keywords": ["compresser image", "réduire taille image", "optimiser image", "image légère"]
+      },
+      "convert-image": {
+        "title": "Convertir Image — Changer le format d'une image",
+        "description": "Convertissez vos images entre JPG, PNG et WebP. Conversion locale dans le navigateur.",
+        "keywords": ["convertir image", "JPG en PNG", "PNG en WebP", "changer format image"]
+      },
+      "resize-image": {
+        "title": "Redimensionner Image — Modifier les dimensions",
+        "description": "Changez la largeur et la hauteur de vos images. Redimensionnement 100% local.",
+        "keywords": ["redimensionner image", "taille image", "dimensions image", "resize photo"]
+      },
+      "remove-metadata": {
+        "title": "Supprimer les métadonnées d'un PDF",
+        "description": "Effacez toutes les métadonnées (auteur, titre, dates) d'un PDF en un clic. Nettoyage complet.",
+        "keywords": ["supprimer métadonnées PDF", "effacer métadonnées PDF", "anonymiser PDF"]
+      },
+      "metadata-manager": {
+        "title": "Gérer les métadonnées d'un PDF",
+        "description": "Lisez, modifiez ou supprimez les métadonnées d'un PDF. Éditeur de métadonnées 100% local.",
+        "keywords": ["métadonnées PDF", "éditer métadonnées PDF", "modifier PDF", "infos PDF"]
+      },
+      "hash": {
+        "title": "Hash — Calculer l'empreinte numérique",
+        "description": "Calculez le hash MD5, SHA-1, SHA-256, SHA-384, SHA-512 d'un texte ou fichier. Vérification d'intégrité.",
+        "keywords": ["hash", "SHA-256", "MD5", "empreinte numérique", "checksum", "intégrité fichier"]
+      },
+      "secrets": {
+        "title": "Générateur de Secrets — UUID, clés API, tokens",
+        "description": "Générez des UUID v4, clés API, tokens sécurisés et mots de passe forts. 100% local.",
+        "keywords": ["générateur UUID", "clé API", "token sécurisé", "mot de passe fort", "générateur secrets"]
+      },
+      "json-formatter": {
+        "title": "JSON Formatter — Formater et valider du JSON",
+        "description": "Formatez, validez et embellissez votre JSON. Indentation automatique et détection d'erreurs.",
+        "keywords": ["JSON formatter", "valider JSON", "formater JSON", "JSON beautifier"]
+      },
+      "twitter-video": {
+        "title": "Téléchargeur X / Twitter — Télécharger une vidéo",
+        "description": "Téléchargez les vidéos de X (Twitter) au format MP4. Collez le lien du post, récupérez la vidéo.",
+        "keywords": ["télécharger vidéo Twitter", "téléchargeur X", "MP4 Twitter", "vidéo X", "download Twitter video"]
+      }
+    }
+  },
+  "legal": {
+    "metadata": {
+      "title": "Mentions légales & Confidentialité",
+      "description": "Mentions légales, politique de confidentialité et conditions d'utilisation de Boîte à Outils PDF & Documents."
+    },
+    "badge": "Zéro donnée collectée",
+    "updated": "Dernière mise à jour : {date}",
+    "title": "Mentions légales & Confidentialité",
+    "editor": {
+      "title": "Éditeur du site",
+      "p1": "Boîte à Outils PDF & Documents est un service web gratuit proposé sous forme d'application web progressive (PWA).",
+      "p2": "Ce service est hébergé de manière entièrement statique. Aucune donnée personnelle n'est collectée, stockée ou traitée sur un serveur."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "commitment": "Engagement fondamental",
+      "commitmentText": "Aucun fichier n'est jamais envoyé sur un serveur. Tout le traitement s'effectue localement dans votre navigateur web. Vos documents ne quittent jamais votre appareil.",
+      "data": "Données traitées",
+      "documents": "Documents PDF et images",
+      "documentsText": "chargés temporairement en mémoire vive (RAM) de votre appareil pour être traités par les bibliothèques JavaScript côté client.",
+      "persistence": "Aucune persistance",
+      "persistenceText": "les fichiers sont automatiquement supprimés de la mémoire lorsque vous fermez l'onglet, rechargez la page ou cliquez sur \"Fermer\" dans l'aperçu.",
+      "collection": "Aucune collecte",
+      "collectionText": "nous ne collectons, ne stockons et ne transmettons aucun fichier, métadonnée ou contenu de document.",
+      "cookies": "Cookies & traceurs",
+      "cookiesText": "Ce site n'utilise aucun cookie de traçage, aucun pixel espion et aucun service d'analyse tierce (Google Analytics, etc.). Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
+      "hosting": "Hébergement",
+      "hostingText": "Le site est servi sous forme de fichiers statiques. Aucun traitement serveur n'est effectué sur vos documents. Les bibliothèques de traitement (pdf-lib, pdfjs-dist, jspdf) s'exécutent entièrement dans votre navigateur."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "purpose": "Objet du service",
+      "purposeText": "Boîte à Outils PDF & Documents fournit des utilitaires de manipulation de documents PDF et d'images, exécutés exclusivement côté client dans le navigateur de l'utilisateur.",
+      "responsibilities": "Responsabilités de l'utilisateur",
+      "resp1": "Vous êtes seul responsable des documents que vous traitez avec cet outil.",
+      "resp2": "Ce service est fourni à titre indicatif. Nous recommandons de conserver une copie de sauvegarde de vos documents originaux avant toute modification.",
+      "resp3": "L'utilisateur s'engage à ne pas utiliser le service pour des activités illégales (contrefaçon, fraude, violation de droits d'auteur, etc.).",
+      "limitation": "Limitation de responsabilité",
+      "limitationText": "Le service est fourni \"en l'état\", sans garantie d'aucune sorte. L'éditeur ne peut être tenu responsable d'éventuelles pertes de données, altérations de documents ou erreurs de traitement. L'utilisateur est invité à vérifier ses documents avant utilisation.",
+      "property": "Propriété intellectuelle",
+      "propertyText": "Le code source, le design et l'identité visuelle de ce site sont la propriété de l'éditeur. Les bibliothèques tierces utilisées (pdf-lib, pdfjs-dist, jspdf, shadcn/ui, etc.) sont soumises à leurs propres licences open-source respectives."
+    },
+    "credits": {
+      "title": "Crédits & Bibliothèques",
+      "intro": "Ce site est construit grâce aux technologies et bibliothèques open-source suivantes :",
+      "next": "Framework React",
+      "typescript": "Langage typé",
+      "tailwind": "Framework CSS",
+      "shadcn": "Composants UI",
+      "pdflib": "Manipulation PDF",
+      "pdfjs": "Rendu PDF",
+      "jspdf": "Génération PDF",
+      "browserImage": "Compression images",
+      "jszip": "Compression ZIP",
+      "lucide": "Icônes",
+      "radix": "Primitives accessibles",
+      "note": "Aucune métadonnée de ces bibliothèques n'est insérée dans les documents que vous générez."
+    },
+    "gdpr": {
+      "title": "Droit à l'oubli & suppression",
+      "p1": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Comme aucune donnée n'est collectée, aucune action n'est nécessaire de votre part : vos documents existent uniquement dans votre navigateur et disparaissent automatiquement.",
+      "p2": "Pour toute question relative à la confidentialité, vous pouvez nous contacter (voir ci-dessous)."
+    },
+    "contact": {
+      "title": "Contact",
+      "text": "Pour toute question concernant les mentions légales, la confidentialité ou le fonctionnement du service :",
+      "email": "contact@argus-labs.fr"
+    },
+    "footer": {
+      "copyright": "© {year} Boîte à Outils PDF & Documents —",
+      "back": "Retour à l'accueil"
+    }
+  },
+  "manifest": {
+    "name": "Boîte à Outils PDF & Documents",
+    "shortName": "PDF Tools",
+    "description": "Outils PDF et images gratuits, 100% locaux et sécurisés."
+  },
+  "api": {
+    "twitterVideo": {
+      "missingUrl": "URL manquante.",
+      "invalidUrl": "URL invalide. Format attendu : https://x.com/utilisateur/status/123456789",
+      "notFound": "Impossible d'extraire la vidéo. Le tweet est peut-être privé ou indisponible.",
+      "internalError": "Erreur interne.",
+      "downloadFailed": "Téléchargement échoué.",
+      "proxyError": "Erreur de proxy.",
+      "defaultAuthor": "Twitter",
+      "defaultTitle": "Twitter Video",
+      "unknownQuality": "Unknown",
+      "mp4": "MP4"
+    }
+  }
+}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -18,6 +20,7 @@ if (typeof window !== "undefined") {
 }
 
 export function PdfToImagesTool() {
+  const t = useTranslations("tool.pdfToImages");
   const [files, setFiles] = useState<File[]>([]);
   const [format, setFormat] = useState("png");
   const [quality, setQuality] = useState([90]);
@@ -41,7 +44,7 @@ export function PdfToImagesTool() {
 
   const convertToImages = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -53,7 +56,7 @@ export function PdfToImagesTool() {
       const bytes = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
       if (pdf.numPages > 200) {
-        throw new Error("PDF trop volumineux (max 200 pages)");
+        throw new Error(t("tooManyPagesError"));
       }
       const zip = new JSZip();
       const previewUrls: string[] = [];
@@ -97,9 +100,9 @@ export function PdfToImagesTool() {
       const url = URL.createObjectURL(zipBlob);
       setResultUrl(url);
       setPreviews(previewUrls);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(`Erreur lors de la conversion: ${err?.message || "Vérifiez que le PDF est valide."}`);
+      setError(t("error", { message: err instanceof Error ? err.message : "" }));
     } finally {
       setProcessing(false);
     }
@@ -107,8 +110,8 @@ export function PdfToImagesTool() {
 
   return (
     <ToolLayout
-      title="PDF → Images"
-      description="Convertissez chaque page d'un PDF en images de haute qualité."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -121,21 +124,21 @@ export function PdfToImagesTool() {
         {files.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
-              <Label>Format de sortie</Label>
+              <Label>{t("formatLabel")}</Label>
               <Select value={format} onValueChange={setFormat}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="png">PNG (transparent)</SelectItem>
-                  <SelectItem value="jpg">JPG (léger)</SelectItem>
-                  <SelectItem value="webp">WebP (moderne)</SelectItem>
+                  <SelectItem value="png">{t("formatPng")}</SelectItem>
+                  <SelectItem value="jpg">{t("formatJpg")}</SelectItem>
+                  <SelectItem value="webp">{t("formatWebp")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {format !== "png" && (
               <div className="space-y-3">
-                <Label>Qualité ({quality[0]}%)</Label>
+                <Label>{t("qualityLabel", { value: quality[0] })}</Label>
                 <input
                   type="range"
                   min="30"
@@ -162,7 +165,7 @@ export function PdfToImagesTool() {
           className="w-full sm:w-auto"
         >
           <ImageIcon className="h-4 w-4 mr-2" />
-          {processing ? "Conversion..." : "Convertir en images"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations, useLocale } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { cleanText } from "@/lib/sanitize";
 import { PDFDocument } from "pdf-lib";
@@ -8,8 +10,7 @@ import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Download, AlertCircle, Eraser, Save, Eye, Info } from "lucide-react";
+import { AlertCircle, Eraser, Save, Eye, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,8 @@ const EMPTY_METADATA: PdfMetadata = {
 };
 
 export function MetadataTool() {
+  const t = useTranslations("tool.metadataManager");
+  const locale = useLocale();
   const [files, setFiles] = useState<File[]>([]);
   const [metadata, setMetadata] = useState<PdfMetadata>(EMPTY_METADATA);
   const [originalMetadata, setOriginalMetadata] = useState<PdfMetadata>(EMPTY_METADATA);
@@ -85,9 +88,9 @@ export function MetadataTool() {
       setOriginalMetadata(meta);
       setActiveTab("view");
     } catch {
-      setError("Impossible de lire les métadonnées du PDF.");
+      setError(t("loadError"));
     }
-  }, []);
+  }, [t]);
 
   const updateMetadataField = (field: keyof PdfMetadata, value: string) => {
     setMetadata((prev) => ({ ...prev, [field]: value }));
@@ -96,7 +99,7 @@ export function MetadataTool() {
 
   const applyMetadata = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -121,8 +124,8 @@ export function MetadataTool() {
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
       setOriginalMetadata(metadata);
-    } catch (err) {
-      setError("Erreur lors de la modification des métadonnées.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -137,8 +140,8 @@ export function MetadataTool() {
 
   return (
     <ToolLayout
-      title="Métadonnées PDF"
-      description="Visualisez, modifiez ou supprimez les métadonnées de vos PDF."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -153,33 +156,33 @@ export function MetadataTool() {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="view">
                 <Eye className="h-4 w-4 mr-2" />
-                Visualiser
+                {t("viewTab")}
               </TabsTrigger>
               <TabsTrigger value="edit">
                 <Save className="h-4 w-4 mr-2" />
-                Modifier
+                {t("editTab")}
                 {hasChanges && (
-                  <Badge variant="secondary" className="ml-2 text-[10px] px-1.5">modifié</Badge>
+                  <Badge variant="secondary" className="ml-2 text-[10px] px-1.5">{t("modified")}</Badge>
                 )}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="view" className="space-y-4 mt-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <MetadataField label="Titre" value={metadata.title || "—"} />
-                <MetadataField label="Auteur" value={metadata.author || "—"} />
-                <MetadataField label="Sujet" value={metadata.subject || "—"} />
-                <MetadataField label="Mots-clés" value={metadata.keywords || "—"} />
-                <MetadataField label="Créateur" value={metadata.creator || "—"} />
-                <MetadataField label="Producteur" value={metadata.producer || "—"} />
+                <MetadataField label={t("titleLabel")} value={metadata.title || t("empty")} />
+                <MetadataField label={t("authorLabel")} value={metadata.author || t("empty")} />
+                <MetadataField label={t("subjectLabel")} value={metadata.subject || t("empty")} />
+                <MetadataField label={t("keywordsLabel")} value={metadata.keywords || t("empty")} />
+                <MetadataField label={t("creatorLabel")} value={metadata.creator || t("empty")} />
+                <MetadataField label={t("producerLabel")} value={metadata.producer || t("empty")} />
               </div>
               {(metadata.creationDate || metadata.modificationDate) && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {metadata.creationDate && (
-                    <MetadataField label="Date de création" value={new Date(metadata.creationDate).toLocaleString("fr-FR")} />
+                    <MetadataField label={t("creationDateLabel")} value={new Date(metadata.creationDate).toLocaleString(locale)} />
                   )}
                   {metadata.modificationDate && (
-                    <MetadataField label="Date de modification" value={new Date(metadata.modificationDate).toLocaleString("fr-FR")} />
+                    <MetadataField label={t("modificationDateLabel")} value={new Date(metadata.modificationDate).toLocaleString(locale)} />
                   )}
                 </div>
               )}
@@ -189,64 +192,63 @@ export function MetadataTool() {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  Modifiez les champs ci-dessous puis cliquez sur "Appliquer les modifications".
-                  Laissez un champ vide pour le supprimer.
+                  {t("editHint")} {t("emptyHint")}
                 </AlertDescription>
               </Alert>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor="title">Titre</Label>
+                  <Label htmlFor="title">{t("titleLabel")}</Label>
                   <Input
                     id="title"
                     value={metadata.title}
                     onChange={(e) => updateMetadataField("title", e.target.value)}
-                    placeholder="Titre du document"
+                    placeholder={t("titlePlaceholder")}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="author">Auteur</Label>
+                  <Label htmlFor="author">{t("authorLabel")}</Label>
                   <Input
                     id="author"
                     value={metadata.author}
                     onChange={(e) => updateMetadataField("author", e.target.value)}
-                    placeholder="Nom de l'auteur"
+                    placeholder={t("authorPlaceholder")}
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="subject">Sujet</Label>
+                  <Label htmlFor="subject">{t("subjectLabel")}</Label>
                   <Input
                     id="subject"
                     value={metadata.subject}
                     onChange={(e) => updateMetadataField("subject", e.target.value)}
-                    placeholder="Sujet du document"
+                    placeholder={t("subjectPlaceholder")}
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <Label htmlFor="keywords">Mots-clés</Label>
+                  <Label htmlFor="keywords">{t("keywordsLabel")}</Label>
                   <Input
                     id="keywords"
                     value={metadata.keywords}
                     onChange={(e) => updateMetadataField("keywords", e.target.value)}
-                    placeholder="mot1, mot2, mot3"
+                    placeholder={t("keywordsPlaceholder")}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="creator">Créateur</Label>
+                  <Label htmlFor="creator">{t("creatorLabel")}</Label>
                   <Input
                     id="creator"
                     value={metadata.creator}
                     onChange={(e) => updateMetadataField("creator", e.target.value)}
-                    placeholder="Logiciel créateur"
+                    placeholder={t("creatorPlaceholder")}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="producer">Producteur</Label>
+                  <Label htmlFor="producer">{t("producerLabel")}</Label>
                   <Input
                     id="producer"
                     value={metadata.producer}
                     onChange={(e) => updateMetadataField("producer", e.target.value)}
-                    placeholder="Logiciel producteur"
+                    placeholder={t("producerPlaceholder")}
                   />
                 </div>
               </div>
@@ -258,7 +260,7 @@ export function MetadataTool() {
                   className="w-full sm:w-auto"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {processing ? "Application..." : "Appliquer les modifications"}
+                  {processing ? t("processing") : t("action")}
                 </Button>
                 <Button
                   variant="outline"
@@ -266,7 +268,7 @@ export function MetadataTool() {
                   className="w-full sm:w-auto"
                 >
                   <Eraser className="h-4 w-4 mr-2" />
-                  Tout effacer
+                  {t("clear")}
                 </Button>
               </div>
             </TabsContent>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { toolCategories } from "@/lib/tools";
@@ -56,6 +57,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function AppSidebar() {
+  const t = useTranslations();
   const pathname = usePathname();
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["pdf", "images"]);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -95,8 +97,8 @@ export function AppSidebar() {
                 <Logo className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-bold text-lg leading-tight">PDF & Docs</h1>
-                <p className="text-xs text-muted-foreground">Outils locaux 100%</p>
+                <h1 className="font-bold text-lg leading-tight">{t("sidebar.brand")}</h1>
+                <p className="text-xs text-muted-foreground">{t("sidebar.tagline")}</p>
               </div>
             </Link>
           </div>
@@ -115,7 +117,7 @@ export function AppSidebar() {
                     >
                       <div className="flex items-center gap-2">
                         <Icon className="h-4 w-4" />
-                        <span>{category.name}</span>
+                        <span>{t(`categories.${category.id}`)}</span>
                       </div>
                       {isExpanded ? (
                         <ChevronDown className="h-3 w-3" />
@@ -143,7 +145,7 @@ export function AppSidebar() {
                               )}
                             >
                               <ToolIcon className="h-3.5 w-3.5" />
-                              <span>{tool.name}</span>
+                              <span>{t(`tools.${tool.id}.name`)}</span>
                             </Link>
                           );
                         })}
@@ -163,11 +165,11 @@ export function AppSidebar() {
                   <span className="block w-[3px] h-2 rounded-full opacity-60" style={{ backgroundColor: "#ccc" }} />
                   <span className="block w-[3px] h-2 rounded-full opacity-60" style={{ backgroundColor: "#EF4135" }} />
                 </span>
-                <span className="tracking-wide">100% local</span>
+                <span className="tracking-wide">{t("sidebar.badge")}</span>
               </div>
             </div>
             <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-              Aucun fichier n'est jamais envoyé sur un serveur. Tout le traitement se fait dans votre navigateur.
+              {t("sidebar.privacy")}
             </p>
             <Link
               href="/legal"
@@ -180,19 +182,11 @@ export function AppSidebar() {
               )}
             >
               <Scale className="h-3 w-3" />
-              <span>Mentions légales & Confidentialité</span>
+              <span>{t("sidebar.legal")}</span>
             </Link>
             <div className="text-center">
               <p className="text-[10px] text-muted-foreground">
-                &copy; {new Date().getFullYear()} made by{" "}
-                <a
-                  href="https://argus-labs.fr/community"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-foreground"
-                >
-                  Argus Labs
-                </a>
+                {t("sidebar.copyright", { year: new Date().getFullYear(), author: "Argus Labs" })}
               </p>
             </div>
           </div>

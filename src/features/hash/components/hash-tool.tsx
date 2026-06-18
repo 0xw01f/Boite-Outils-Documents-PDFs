@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
@@ -15,13 +17,13 @@ type HashAlgo = "MD5" | "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
 
 const ALGORITHMS: HashAlgo[] = ["MD5", "SHA-1", "SHA-256", "SHA-384", "SHA-512"];
 
-async function computeHashText(text: string, algo: HashAlgo): Promise<string> {
+async function computeHashText(text: string, algo: HashAlgo, t: ReturnType<typeof useTranslations>): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
   const algoName = algo.replace("SHA-", "SHA-").replace("SHA-1", "SHA-1").replace("MD5", "MD5");
 
   if (algo === "MD5") {
-    return "MD5 non disponible en navigateur (utilisez SHA-256)";
+    return t("md5Unavailable");
   }
 
   const hashBuffer = await crypto.subtle.digest(algoName as AlgorithmIdentifier, data);
@@ -29,11 +31,11 @@ async function computeHashText(text: string, algo: HashAlgo): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function computeHashFile(buffer: ArrayBuffer, algo: HashAlgo): Promise<string> {
+async function computeHashFile(buffer: ArrayBuffer, algo: HashAlgo, t: ReturnType<typeof useTranslations>): Promise<string> {
   const algoName = algo.replace("SHA-", "SHA-").replace("SHA-1", "SHA-1").replace("MD5", "MD5");
 
   if (algo === "MD5") {
-    return "MD5 non disponible en navigateur (utilisez SHA-256)";
+    return t("md5Unavailable");
   }
 
   const hashBuffer = await crypto.subtle.digest(algoName as AlgorithmIdentifier, buffer);
@@ -42,6 +44,7 @@ async function computeHashFile(buffer: ArrayBuffer, algo: HashAlgo): Promise<str
 }
 
 export function HashTool() {
+  const t = useTranslations("tool.hash");
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [results, setResults] = useState<Record<string, string>>({});
@@ -58,13 +61,13 @@ export function HashTool() {
     const newResults: Record<string, string> = {};
     for (const algo of ALGORITHMS) {
       try {
-        newResults[algo] = await computeHashText(clean, algo);
+        newResults[algo] = await computeHashText(clean, algo, t);
       } catch {
-        newResults[algo] = "Erreur";
+        newResults[algo] = t("errorResult");
       }
     }
     setResults(newResults);
-  }, [text]);
+  }, [text, t]);
 
   const computeAllFile = useCallback(async () => {
     if (!file) {
@@ -76,13 +79,13 @@ export function HashTool() {
     const newResults: Record<string, string> = {};
     for (const algo of ALGORITHMS) {
       try {
-        newResults[algo] = await computeHashFile(buffer, algo);
+        newResults[algo] = await computeHashFile(buffer, algo, t);
       } catch {
-        newResults[algo] = "Erreur";
+        newResults[algo] = t("errorResult");
       }
     }
     setResults(newResults);
-  }, [file]);
+  }, [file, t]);
 
   const copyToClipboard = async (value: string, algo: string) => {
     await navigator.clipboard.writeText(value);
@@ -92,17 +95,14 @@ export function HashTool() {
 
   return (
     <ToolLayout
-      title="Hash"
-      description="Calculez l'empreinte numérique d'un texte ou d'un fichier avec plusieurs algorithmes."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <Alert variant="default" className="bg-muted/50 border-muted">
           <Info className="h-4 w-4 mt-0.5" />
           <AlertDescription className="text-sm">
-            Un <strong>hash</strong> est une empreinte unique générée à partir d'un texte ou d'un fichier.
-            Elle sert à vérifier l'intégrité d'un document (détecter toute modification)
-            ou à comparer deux fichiers sans les ouvrir. Même un changement minuscule
-            dans le texte de départ produit un hash complètement différent.
+            {t("info")}
           </AlertDescription>
         </Alert>
 
@@ -110,22 +110,22 @@ export function HashTool() {
           <TabsList>
             <TabsTrigger value="text">
               <Type className="h-3.5 w-3.5 mr-1.5" />
-              Texte
+              {t("textTab")}
             </TabsTrigger>
             <TabsTrigger value="file">
               <FileText className="h-3.5 w-3.5 mr-1.5" />
-              Fichier
+              {t("fileTab")}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="text" className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="text-input">Texte à hasher</Label>
+              <Label htmlFor="text-input">{t("textLabel")}</Label>
               <Textarea
                 id="text-input"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Entrez le texte..."
+                placeholder={t("textPlaceholder")}
                 rows={4}
               />
             </div>
@@ -135,13 +135,13 @@ export function HashTool() {
               className="w-full sm:w-auto"
             >
               <Hash className="h-4 w-4 mr-2" />
-              Calculer tous les hashs
+              {t("action")}
             </Button>
           </TabsContent>
 
           <TabsContent value="file" className="space-y-4 mt-4">
             <div>
-              <Label>Fichier à hasher</Label>
+              <Label>{t("fileLabel")}</Label>
               <Input
                 type="file"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
@@ -149,7 +149,7 @@ export function HashTool() {
               />
               {file && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                  {t("fileInfo", { name: file.name, size: (file.size / 1024).toFixed(1) })}
                 </p>
               )}
             </div>
@@ -159,7 +159,7 @@ export function HashTool() {
               className="w-full sm:w-auto"
             >
               <Hash className="h-4 w-4 mr-2" />
-              Calculer tous les hashs
+              {t("action")}
             </Button>
           </TabsContent>
         </Tabs>

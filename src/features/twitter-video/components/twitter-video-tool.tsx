@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState } from "react";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,8 @@ interface TweetInfo {
 }
 
 export function TwitterVideoTool() {
+  const t = useTranslations("tool.twitterVideo");
+  const tCommon = useTranslations("common");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +33,7 @@ export function TwitterVideoTool() {
 
   const analyze = async () => {
     if (!url.trim()) {
-      setError("Veuillez coller l'URL du post X/Twitter.");
+      setError(t("noUrlError"));
       return;
     }
     setLoading(true);
@@ -45,13 +49,13 @@ export function TwitterVideoTool() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Une erreur est survenue.");
+        setError(data.error || t("apiError"));
         return;
       }
 
       setInfo(data as TweetInfo);
     } catch {
-      setError("Erreur réseau. Vérifiez votre connexion.");
+      setError(t("networkError"));
     } finally {
       setLoading(false);
     }
@@ -69,18 +73,18 @@ export function TwitterVideoTool() {
 
   return (
     <ToolLayout
-      title="Téléchargeur X / Twitter"
-      description="Collez le lien d'un post pour récupérer la vidéo en MP4."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="tweet-url">Lien du post X / Twitter</Label>
+          <Label htmlFor="tweet-url">{t("urlLabel")}</Label>
           <div className="flex gap-2">
             <Input
               id="tweet-url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://x.com/utilisateur/status/1234567890123456789"
+              placeholder={t("urlPlaceholder")}
               className="flex-1"
               onKeyDown={(e) => {
                 if (e.key === "Enter") analyze();
@@ -92,11 +96,11 @@ export function TwitterVideoTool() {
               ) : (
                 <Video className="h-4 w-4 mr-2" />
               )}
-              {loading ? "Analyse..." : "Récupérer"}
+              {loading ? t("processing") : t("action")}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Exemple : https://x.com/elonmusk/status/1800000000000000000
+            {t("urlHint")}
           </p>
         </div>
 
@@ -114,7 +118,7 @@ export function TwitterVideoTool() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={info.thumbnail}
-                  alt="Aperçu"
+                  alt={t("previewAlt")}
                   className="w-full max-h-64 object-contain"
                 />
               </div>
@@ -126,7 +130,7 @@ export function TwitterVideoTool() {
             </div>
 
             <div className="space-y-2">
-              <Label>Téléchargements disponibles</Label>
+              <Label>{t("downloadsTitle")}</Label>
               <div className="grid gap-2">
                 {info.videos.map((v, i) => (
                   <div
@@ -137,7 +141,7 @@ export function TwitterVideoTool() {
                       <p className="text-sm font-medium truncate">{v.quality}</p>
                       {v.bitrate && (
                         <p className="text-xs text-muted-foreground">
-                          {(v.bitrate / 1000).toFixed(0)} kbps
+                          {t("bitrate", { bitrate: (v.bitrate / 1000).toFixed(0) })}
                         </p>
                       )}
                     </div>
@@ -148,13 +152,13 @@ export function TwitterVideoTool() {
                         onClick={() => downloadViaProxy(v.url)}
                       >
                         <Download className="h-3.5 w-3.5 mr-1.5" />
-                        MP4
+                        {t("mp4")}
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => window.open(v.url, "_blank")}
-                        title="Ouvrir le lien direct"
+                        title={tCommon("openLink")}
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Button>

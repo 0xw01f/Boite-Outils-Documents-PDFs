@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
@@ -24,6 +26,8 @@ import {
 } from "@/features/image-compress/lib/compress-image";
 
 export function ImageCompressTool() {
+  const t = useTranslations("tool.compressImage");
+  const tCommon = useTranslations("common");
   const [files, setFiles] = useState<File[]>([]);
   const [level, setLevel] = useState<CompressionLevel>("medium");
   const [quality, setQuality] = useState([75]);
@@ -48,7 +52,7 @@ export function ImageCompressTool() {
 
   const handleCompress = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner une image.");
+      setError(t("noFileError"));
       return;
     }
 
@@ -72,9 +76,9 @@ export function ImageCompressTool() {
         original: originalSize,
         compressed: compressedFile.size,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(`Erreur lors de la compression : ${err?.message || "Vérifiez le format de l'image."}`);
+      setError(t("error", { message: err instanceof Error ? err.message : "" }));
     } finally {
       setProcessing(false);
     }
@@ -84,8 +88,8 @@ export function ImageCompressTool() {
 
   return (
     <ToolLayout
-      title="Compresser une image"
-      description="Réduisez la taille de vos images avec des profils ciblés."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -98,29 +102,29 @@ export function ImageCompressTool() {
         {files.length > 0 && (
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-3">
-              <Label>Niveau de compression</Label>
+              <Label>{t("levelLabel")}</Label>
               <Select value={level} onValueChange={(value) => setLevel(value as CompressionLevel)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Léger (perte minimale)</SelectItem>
-                  <SelectItem value="medium">Moyen (recommandé)</SelectItem>
-                  <SelectItem value="strong">Fort (taille minimale)</SelectItem>
-                  <SelectItem value="custom">Personnalisé</SelectItem>
+                  <SelectItem value="light">{t("levelLight")}</SelectItem>
+                  <SelectItem value="medium">{t("levelMedium")}</SelectItem>
+                  <SelectItem value="strong">{t("levelStrong")}</SelectItem>
+                  <SelectItem value="custom">{t("levelCustom")}</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                {level === "light" && "Réduit légèrement la qualité et la résolution."}
-                {level === "medium" && "Bon compromis pour le web, le mail et le stockage."}
-                {level === "strong" && "Réduit fortement la taille. Idéal pour les aperçus."}
-                {level === "custom" && "Vous contrôlez manuellement la qualité."}
+                {level === "light" && t("lightHint")}
+                {level === "medium" && t("mediumHint")}
+                {level === "strong" && t("strongHint")}
+                {level === "custom" && t("customHint")}
               </p>
             </div>
 
             {level === "custom" && (
               <div className="space-y-3">
-                <Label>Qualité ({quality[0]}%)</Label>
+                <Label>{t("qualityLabel", { value: quality[0] })}</Label>
                 <Slider
                   value={quality}
                   onValueChange={setQuality}
@@ -133,9 +137,9 @@ export function ImageCompressTool() {
             {isPng && (
               <div className="flex items-center justify-between rounded-lg border p-4 sm:col-span-2">
                 <div className="space-y-0.5">
-                  <Label>Convertir PNG → JPEG</Label>
+                  <Label>{t("convertPngToJpeg")}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Souvent 5 à 10× plus léger sur les photos sans transparence.
+                    {t("convertHint")}
                   </p>
                 </div>
                 <Switch
@@ -157,20 +161,20 @@ export function ImageCompressTool() {
         {compressionInfo && (
           <div className="p-4 rounded-lg bg-muted space-y-2">
             <p className="text-sm font-medium">
-              Résultat — profil {getLevelLabel(level)} :
+              {t("resultTitle", { level: getLevelLabel(level, t) })}
             </p>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Taille originale</p>
+                <p className="text-muted-foreground">{tCommon("originalSize")}</p>
                 <p className="font-medium">{(compressionInfo.original / 1024).toFixed(1)} KB</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Taille compressée</p>
+                <p className="text-muted-foreground">{tCommon("compressedSize")}</p>
                 <p className="font-medium">{(compressionInfo.compressed / 1024).toFixed(1)} KB</p>
               </div>
             </div>
             <p className="text-sm text-green-600 font-medium">
-              Réduction : {((1 - compressionInfo.compressed / compressionInfo.original) * 100).toFixed(1)}%
+              {tCommon("reduction", { percentage: ((1 - compressionInfo.compressed / compressionInfo.original) * 100).toFixed(1) })}
             </p>
           </div>
         )}
@@ -180,7 +184,7 @@ export function ImageCompressTool() {
           disabled={files.length === 0 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Compression..." : "Compresser"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -11,6 +13,7 @@ import { PreviewPanel } from "@/components/preview-panel";
 import { PdfPageGrid } from "@/components/pdf-page-grid";
 
 export function PdfDeleteTool() {
+  const t = useTranslations("tool.deletePages");
   const [files, setFiles] = useState<File[]>([]);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [selectedPages, setSelectedPages] = useState<number[]>([]);
@@ -37,12 +40,12 @@ export function PdfDeleteTool() {
 
   const deletePages = async () => {
     if (files.length === 0) {
-      setError("Veuillez sélectionner un fichier PDF.");
+      setError(t("noFileError"));
       return;
     }
 
     if (selectedPages.length === 0) {
-      setError("Veuillez sélectionner au moins une page à supprimer.");
+      setError(t("noPagesError"));
       return;
     }
 
@@ -64,7 +67,7 @@ export function PdfDeleteTool() {
       }
 
       if (pagesToKeep.length === 0) {
-        setError("Vous ne pouvez pas supprimer toutes les pages.");
+        setError(t("allPagesError"));
         setProcessing(false);
         return;
       }
@@ -83,8 +86,8 @@ export function PdfDeleteTool() {
       const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la suppression des pages.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -92,8 +95,8 @@ export function PdfDeleteTool() {
 
   return (
     <ToolLayout
-      title="Supprimer des pages"
-      description="Supprimez des pages spécifiques d'un PDF."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -127,7 +130,7 @@ export function PdfDeleteTool() {
           className="w-full sm:w-auto"
           variant="destructive"
         >
-          {processing ? "Traitement..." : "Supprimer les pages"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (

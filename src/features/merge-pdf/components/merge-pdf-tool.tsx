@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
@@ -10,6 +12,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PreviewPanel } from "@/components/preview-panel";
 
 export function MergePdfTool() {
+  const t = useTranslations("tool.mergePdf");
+  const tCommon = useTranslations("common");
   const [files, setFiles] = useState<File[]>([]);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +51,7 @@ export function MergePdfTool() {
 
   const mergePdfs = async () => {
     if (files.length < 2) {
-      setError("Veuillez sélectionner au moins 2 fichiers PDF à fusionner.");
+      setError(t("minFilesError"));
       return;
     }
 
@@ -75,8 +79,8 @@ export function MergePdfTool() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
       const url = URL.createObjectURL(blob);
       setResultUrl(url);
-    } catch (err) {
-      setError("Erreur lors de la fusion des PDF. Vérifiez que les fichiers ne sont pas corrompus.");
+    } catch {
+      setError(t("error"));
     } finally {
       setProcessing(false);
     }
@@ -84,8 +88,8 @@ export function MergePdfTool() {
 
   return (
     <ToolLayout
-      title="Fusionner des PDF"
-      description="Combinez plusieurs fichiers PDF en un seul document. Réorganisez l'ordre des fichiers si nécessaire."
+      title={t("title")}
+      description={t("description")}
     >
       <div className="space-y-6">
         <FileDropZone
@@ -98,7 +102,7 @@ export function MergePdfTool() {
 
         {files.length > 0 && (
           <div className="space-y-2">
-            <p className="text-sm font-medium">Ordre des fichiers :</p>
+            <p className="text-sm font-medium">{tCommon("fileOrder")}</p>
             {files.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
@@ -155,7 +159,7 @@ export function MergePdfTool() {
           disabled={files.length < 2 || processing}
           className="w-full sm:w-auto"
         >
-          {processing ? "Fusion en cours..." : "Fusionner les PDF"}
+          {processing ? t("processing") : t("action")}
         </Button>
 
         {resultUrl && (
