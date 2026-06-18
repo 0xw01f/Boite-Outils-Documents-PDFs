@@ -35,11 +35,6 @@ export const toolMetadata = {
     "Réduisez la taille de vos fichiers PDF sans perte de qualité. Compression locale dans le navigateur.",
     ["compresser PDF", "réduire taille PDF", "optimiser PDF", "PDF léger"]
   ),
-  "watermark-pdf": makeMeta(
-    "Filigrane PDF — Ajouter un filigrane texte",
-    "Ajoutez un filigrane style document d'identité à vos PDF. Motif ondulé résistant aux modifications IA.",
-    ["filigrane PDF", "watermark PDF", "marquer PDF", "protection PDF"]
-  ),
   "rotate-pdf": makeMeta(
     "Rotation PDF — Pivoter les pages d'un PDF",
     "Faites pivoter toutes les pages d'un PDF de 90°, 180° ou 270°. Traitement 100% local.",
@@ -70,11 +65,6 @@ export const toolMetadata = {
     "Combinez plusieurs images (JPG, PNG, WebP) en un seul fichier PDF. Réordonnez par glisser-déposer.",
     ["images vers PDF", "JPG en PDF", "PNG en PDF", "convertir images PDF"]
   ),
-  "watermark-image": makeMeta(
-    "Filigrane Image — Ajouter un filigrane à une image",
-    "Ajoutez un filigrane texte à vos images. Protection visuelle 100% locale.",
-    ["filigrane image", "watermark photo", "marquer image", "protection image"]
-  ),
   "compress-image": makeMeta(
     "Compresser Image — Réduire la taille d'une image",
     "Réduisez la taille de vos images JPG, PNG, WebP sans perte visible. Compression locale.",
@@ -89,16 +79,6 @@ export const toolMetadata = {
     "Redimensionner Image — Modifier les dimensions",
     "Changez la largeur et la hauteur de vos images. Redimensionnement 100% local.",
     ["redimensionner image", "taille image", "dimensions image", "resize photo"]
-  ),
-  "protect-pdf": makeMeta(
-    "Marquer PDF — Filigrane visuel de protection",
-    "Ajoutez un filigrane visuel de protection à vos documents PDF. Traitement 100% local.",
-    ["marquer PDF", "filigrane protection PDF", "watermark PDF", "protection document"]
-  ),
-  "unlock-pdf": makeMeta(
-    "Déverrouiller PDF — Retirer le mot de passe",
-    "Retirez le mot de passe d'un PDF protégé. Déchiffrement local avec votre mot de passe.",
-    ["déverrouiller PDF", "enlever mot de passe PDF", "déchiffrer PDF", "PDF protégé"]
   ),
   "remove-metadata": makeMeta(
     "Supprimer les métadonnées d'un PDF",

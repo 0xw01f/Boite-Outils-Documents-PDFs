@@ -9,7 +9,6 @@ import {
   Combine,
   Scissors,
   Minimize2,
-  Stamp,
   RotateCw,
   Trash2,
   ArrowUpDown,
@@ -17,8 +16,6 @@ import {
   FilePlus,
   ArrowRightLeft,
   Maximize,
-  Lock,
-  Unlock,
   Tags,
   Fingerprint,
   Hash,
@@ -28,9 +25,9 @@ import {
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileText, Image, Shield, Wrench,
-  Combine, Scissors, Minimize2, Stamp, RotateCw,
+  Combine, Scissors, Minimize2, RotateCw,
   Trash2, ArrowUpDown, FileOutput, FilePlus,
-  ArrowRightLeft, Maximize, Lock, Unlock, Tags,
+  ArrowRightLeft, Maximize, Tags,
   Fingerprint, Hash, Braces, Download,
 };
 

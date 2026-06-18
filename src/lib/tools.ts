@@ -9,7 +9,6 @@ export const toolCategories: ToolCategory[] = [
       { id: "merge-pdf", name: "Fusionner PDF", description: "Combinez plusieurs PDF en un seul", icon: "Combine", category: "pdf", href: "/tools/merge-pdf" },
       { id: "split-pdf", name: "Diviser PDF", description: "Séparez un PDF en plusieurs fichiers", icon: "Scissors", category: "pdf", href: "/tools/split-pdf" },
       { id: "compress-pdf", name: "Compresser PDF", description: "Réduisez la taille de vos PDF", icon: "Minimize2", category: "pdf", href: "/tools/compress-pdf" },
-      { id: "watermark-pdf", name: "Filigrane PDF", description: "Ajoutez un filigrane texte", icon: "Stamp", category: "pdf", href: "/tools/watermark-pdf" },
       { id: "rotate-pdf", name: "Rotation PDF", description: "Faites pivoter les pages", icon: "RotateCw", category: "pdf", href: "/tools/rotate-pdf" },
       { id: "delete-pages", name: "Supprimer pages", description: "Supprimez des pages d'un PDF", icon: "Trash2", category: "pdf", href: "/tools/delete-pages" },
       { id: "reorder-pages", name: "Réorganiser pages", description: "Changez l'ordre des pages", icon: "ArrowUpDown", category: "pdf", href: "/tools/reorder-pages" },
@@ -23,7 +22,6 @@ export const toolCategories: ToolCategory[] = [
     name: "Images",
     icon: "Image",
     tools: [
-      { id: "watermark-image", name: "Filigrane Image", description: "Ajoutez un filigrane texte", icon: "Stamp", category: "images", href: "/tools/watermark-image" },
       { id: "compress-image", name: "Compresser Image", description: "Réduisez la taille sans perdre en qualité", icon: "Minimize2", category: "images", href: "/tools/compress-image" },
       { id: "convert-image", name: "Convertir Format", description: "Changez le format de vos images", icon: "ArrowRightLeft", category: "images", href: "/tools/convert-image" },
       { id: "resize-image", name: "Redimensionner", description: "Changez les dimensions de vos images", icon: "Maximize", category: "images", href: "/tools/resize-image" },
@@ -34,8 +32,6 @@ export const toolCategories: ToolCategory[] = [
     name: "Sécurité",
     icon: "Shield",
     tools: [
-      { id: "protect-pdf", name: "Marquer PDF", description: "Ajoutez un filigrane visuel de protection", icon: "Lock", category: "security", href: "/tools/protect-pdf" },
-      { id: "unlock-pdf", name: "Déverrouiller PDF", description: "Retirez le mot de passe", icon: "Unlock", category: "security", href: "/tools/unlock-pdf" },
       { id: "metadata-manager", name: "Métadonnées PDF", description: "Lire, modifier ou supprimer", icon: "Tags", category: "security", href: "/tools/metadata-manager" },
     ],
   },
