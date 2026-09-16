@@ -382,6 +382,7 @@
       "error": "Error while applying the watermark: {message}."
     },
     "linkShield": {
+      "kicker": "Anti-bot · anti-AI",
       "title": "Link Shield",
       "description": "Turn a URL into an unguessable link. Bots and AIs only see the tool name; a human must pass a captcha to get the destination.",
       "serverNotice": "This tool stores only the destination URL on the server until it expires. The public link includes the tool name. No metadata from the target page is copied.",
@@ -402,7 +403,14 @@
       "resultLabel": "Link to share",
       "expiresAt": "Expires on {date}"
     },
+    "linkShieldShell": {
+      "brand": "Link Shield",
+      "tagline": "Destination hidden from bots",
+      "back": "All tools",
+      "footer": "The target page never appears in the HTML or metadata. Human verification required."
+    },
     "linkShieldGate": {
+      "kicker": "Human verification",
       "title": "Link Shield",
       "description": "Human verification required. The destination is revealed only after the captcha.",
       "notice": "This link was protected with Link Shield. Bots and AIs do not receive the target URL.",

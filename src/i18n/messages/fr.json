@@ -382,6 +382,7 @@
       "error": "Erreur lors de l'application du filigrane : {message}."
     },
     "linkShield": {
+      "kicker": "Anti-bots · anti-IA",
       "title": "Bouclier de liens",
       "description": "Transformez une URL en lien non devinable. Les bots et les IA ne voient que le nom de l'outil ; un humain passe un captcha pour obtenir la destination.",
       "serverNotice": "Cet outil stocke uniquement l'URL de destination sur le serveur, jusqu'à expiration. Le lien public contient le nom de l'outil. Aucune métadonnée de la page cible n'est copiée.",
@@ -402,7 +403,14 @@
       "resultLabel": "Lien à partager",
       "expiresAt": "Expire le {date}"
     },
+    "linkShieldShell": {
+      "brand": "Bouclier de liens",
+      "tagline": "Destination cachée aux robots",
+      "back": "Tous les outils",
+      "footer": "La page cible n'apparaît jamais dans le HTML ni les métadonnées. Vérification humaine requise."
+    },
     "linkShieldGate": {
+      "kicker": "Vérification humaine",
       "title": "Bouclier de liens",
       "description": "Vérification humaine requise. La destination n'est révélée qu'après le captcha.",
       "notice": "Ce lien a été protégé par Bouclier de liens. Les robots et les IA ne reçoivent pas l'URL cible.",

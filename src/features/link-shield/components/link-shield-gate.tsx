@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertCircle, ExternalLink, Loader2, Shield } from "lucide-react";
-import { ToolLayout } from "@/components/tool-layout";
+import { AlertCircle, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TurnstileWidget } from "@/features/link-shield/components/turnstile-widget";
+import { LinkShieldShell } from "@/features/link-shield/components/link-shield-shell";
 
 export function LinkShieldGate({ id }: { id: string }) {
   const t = useTranslations("tool.linkShieldGate");
@@ -48,44 +47,59 @@ export function LinkShieldGate({ id }: { id: string }) {
   };
 
   return (
-    <ToolLayout title={t("title")} description={t("description")}>
-      <div className="space-y-6">
-        <Alert>
-          <Shield className="h-4 w-4" />
-          <AlertDescription>{t("notice")}</AlertDescription>
-        </Alert>
-
-        {!targetUrl && (
-          <>
-            <TurnstileWidget onToken={setToken} />
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button onClick={reveal} disabled={loading} className="w-full sm:w-auto">
-              {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
-              {loading ? t("processing") : t("action")}
-            </Button>
-          </>
-        )}
-
-        {targetUrl && (
-          <div className="space-y-3 rounded-lg border p-4">
-            <p className="text-sm text-muted-foreground">{t("revealed")}</p>
-            <p className="break-all font-mono text-sm">{targetUrl}</p>
-            <Button asChild>
-              <a href={targetUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                {t("open")}
-              </a>
-            </Button>
+    <LinkShieldShell>
+      <div className="space-y-8">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border bg-card shadow-sm">
+            <ShieldCheck className="h-7 w-7 text-primary" />
           </div>
-        )}
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            {t("kicker")}
+          </p>
+          <h1 className="text-3xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
+        </div>
+
+        <div className="rounded-2xl border bg-card/80 p-6 shadow-sm backdrop-blur">
+          {!targetUrl ? (
+            <div className="space-y-5">
+              <p className="text-center text-sm text-muted-foreground">{t("notice")}</p>
+              <TurnstileWidget onToken={setToken} />
+              {error && (
+                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <p>{error}</p>
+                </div>
+              )}
+              <Button onClick={reveal} disabled={loading} className="h-11 w-full text-sm">
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <ShieldCheck className="mr-2 h-4 w-4" />
+                )}
+                {loading ? t("processing") : t("action")}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <div className="space-y-1.5">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {t("revealed")}
+                </p>
+                <p className="break-all rounded-xl bg-muted/70 px-3 py-3 font-mono text-sm leading-relaxed">
+                  {targetUrl}
+                </p>
+              </div>
+              <Button asChild className="h-11 w-full text-sm">
+                <a href={targetUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {t("open")}
+                </a>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-    </ToolLayout>
+    </LinkShieldShell>
   );
 }
