@@ -33,6 +33,7 @@ import {
   Braces,
   Download,
   Stamp,
+  Link2,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -56,6 +57,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Braces,
   Download,
   Stamp,
+  Link2,
 };
 
 export function AppSidebar() {

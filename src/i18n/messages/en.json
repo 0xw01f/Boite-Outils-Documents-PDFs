@@ -16,7 +16,7 @@
     "brand": "PDF & Docs",
     "tagline": "100% local tools",
     "badge": "100% local",
-    "privacy": "No file is ever sent to a server. All processing happens in your browser.",
+    "privacy": "PDF and image files are never uploaded. Link Shield only stores the target URL until it expires.",
     "legal": "Legal & Privacy",
     "copyright": "© {year} made by {author}"
   },
@@ -45,7 +45,8 @@
     "secrets": { "name": "Secret Generator", "description": "UUID, API keys, tokens, passwords" },
     "hash": { "name": "Hash", "description": "Compute the hash of text or a file" },
     "json-formatter": { "name": "JSON Formatter", "description": "Format and validate JSON" },
-    "twitter-video": { "name": "X Downloader", "description": "Download X/Twitter videos" }
+    "twitter-video": { "name": "X Downloader", "description": "Download X/Twitter videos" },
+    "link-shield": { "name": "Link Shield", "description": "Hide a URL from bots and AIs" }
   },
   "common": {
     "download": "Download",
@@ -380,6 +381,39 @@
       "action": "Apply watermark",
       "error": "Error while applying the watermark: {message}."
     },
+    "linkShield": {
+      "title": "Link Shield",
+      "description": "Turn a URL into an unguessable link. Bots and AIs only see the tool name; a human must pass a captcha to get the destination.",
+      "serverNotice": "This tool stores only the destination URL on the server until it expires. The public link includes the tool name. No metadata from the target page is copied.",
+      "noUrlError": "Please paste an http(s) URL.",
+      "captchaRequired": "Complete the captcha before generating the link.",
+      "apiError": "An error occurred.",
+      "networkError": "Network error. Check your connection.",
+      "copyError": "Unable to copy the link.",
+      "urlLabel": "URL to protect",
+      "urlPlaceholder": "https://example.com/page",
+      "urlHint": "Only http and https links are accepted.",
+      "ttlLabel": "Lifetime",
+      "ttl1": "1 day",
+      "ttl7": "7 days (recommended)",
+      "ttl30": "30 days",
+      "processing": "Generating...",
+      "action": "Create protected link",
+      "resultLabel": "Link to share",
+      "expiresAt": "Expires on {date}"
+    },
+    "linkShieldGate": {
+      "title": "Link Shield",
+      "description": "Human verification required. The destination is revealed only after the captcha.",
+      "notice": "This link was protected with Link Shield. Bots and AIs do not receive the target URL.",
+      "captchaRequired": "Complete the captcha to continue.",
+      "apiError": "An error occurred.",
+      "networkError": "Network error. Check your connection.",
+      "processing": "Verifying...",
+      "action": "Verify and reveal the link",
+      "revealed": "Destination:",
+      "open": "Open the link"
+    },
     "twitterVideo": {
       "title": "X / Twitter Downloader",
       "description": "Paste a post link to download the video as MP4.",
@@ -496,6 +530,15 @@
         "title": "PDF and image watermark — JPG, PNG, HEIC",
         "description": "Add a diagonal watermark to your PDFs and images (JPG, PNG, HEIC). 100% local, 100 characters max.",
         "keywords": ["PDF watermark", "image watermark", "JPG watermark", "PNG watermark", "HEIC watermark"]
+      },
+      "link-shield": {
+        "title": "Link Shield — Hide a URL from bots and AIs",
+        "description": "Create an unguessable captcha-protected link. Metadata only mentions the tool name, never the target page.",
+        "keywords": ["protected link", "anti-bot", "link captcha", "obfuscate URL", "link shield"]
+      },
+      "link-shield-gate": {
+        "title": "Link Shield — Human verification required",
+        "description": "Link Shield. Human verification required to access the destination."
       }
     }
   },
@@ -510,28 +553,29 @@
     "editor": {
       "title": "Site publisher",
       "p1": "PDF & Documents Toolbox is a free web service offered as a progressive web app (PWA).",
-      "p2": "This service is hosted in a fully static way. No personal data is collected, stored or processed on a server."
+      "p2": "PDF and image tools run in the browser. Link Shield and the X/Twitter downloader call a server. No document files are collected."
     },
     "privacy": {
       "title": "Privacy policy",
       "commitment": "Core commitment",
-      "commitmentText": "No file is ever sent to a server. All processing happens locally in your web browser. Your documents never leave your device.",
+      "commitmentText": "No PDF or image file is ever sent to a server. Processing of those documents happens locally in your web browser. They never leave your device.",
+      "exceptionsText": "Exceptions: the X/Twitter downloader proxies a video URL, and Link Shield stores only the destination URL until expiry, behind a captcha. No metadata from the target page is copied.",
       "data": "Data processed",
       "documents": "PDF documents and images",
       "documentsText": "loaded temporarily into your device's random access memory (RAM) to be processed by client-side JavaScript libraries.",
       "persistence": "No persistence",
-      "persistenceText": "files are automatically removed from memory when you close the tab, reload the page or click \"Close\" in the preview.",
+      "persistenceText": "PDF and image files are automatically removed from memory when you close the tab, reload the page or click \"Close\" in the preview. Link Shield URLs are deleted at the chosen expiry (1 to 30 days).",
       "collection": "No collection",
-      "collectionText": "we do not collect, store or transmit any file, metadata or document content.",
+      "collectionText": "we do not collect, store or transmit any file, metadata or document content. Link Shield keeps only the target URL, not the page content.",
       "cookies": "Cookies & trackers",
-      "cookiesText": "This site uses Umami, a privacy-friendly self-hosted analytics tool, to anonymously count page views. Umami does not use cookies, track users, or collect personal data. No other tracking cookies, spy pixels or third-party analytics service (Google Analytics, etc.) are used. Only technical session cookies may be used by the Next.js framework for the application to work.",
+      "cookiesText": "This site uses Umami, a privacy-friendly self-hosted analytics tool, to anonymously count page views. Umami does not use cookies, track users, or collect personal data. Link Shield loads Cloudflare Turnstile for the captcha. No other tracking cookies, spy pixels or third-party analytics service (Google Analytics, etc.) are used. Only technical session cookies may be used by the Next.js framework for the application to work.",
       "hosting": "Hosting",
-      "hostingText": "The site is served as static files. No server-side processing is performed on your documents. Processing libraries (pdf-lib, pdfjs-dist, jspdf) run entirely in your browser."
+      "hostingText": "PDF and image documents are processed only in your browser (pdf-lib, pdfjs-dist, jspdf). Link Shield uses ephemeral storage (Vercel KV) for the target URL. No server-side processing is performed on your files."
     },
     "terms": {
       "title": "Terms of use",
       "purpose": "Purpose of the service",
-      "purposeText": "PDF & Documents Toolbox provides utilities for manipulating PDF documents and images, executed exclusively client-side in the user's browser.",
+      "purposeText": "PDF & Documents Toolbox provides utilities for manipulating PDF documents and images, executed client-side, plus a few server services (X/Twitter downloader, Link Shield).",
       "responsibilities": "User responsibilities",
       "resp1": "You are solely responsible for the documents you process with this tool.",
       "resp2": "This service is provided for information purposes. We recommend keeping a backup copy of your original documents before any modification.",
@@ -555,11 +599,13 @@
       "jszip": "ZIP compression",
       "lucide": "Icons",
       "radix": "Accessible primitives",
+      "turnstile": "Anti-bot captcha",
+      "kv": "Ephemeral storage for protected URLs",
       "note": "No metadata from these libraries is inserted into the documents you generate."
     },
     "gdpr": {
       "title": "Right to be forgotten & deletion",
-      "p1": "In accordance with the GDPR, you have the right to access, rectify and delete your personal data. As no data is collected, no action is required on your part: your documents exist only in your browser and disappear automatically.",
+      "p1": "In accordance with the GDPR, you have the right to access, rectify and delete your personal data. PDF and image documents exist only in your browser. Link Shield URLs disappear at expiry; for early deletion, contact us with the public link.",
       "p2": "For any privacy-related question, you can contact us (see below)."
     },
     "contact": {

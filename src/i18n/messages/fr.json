@@ -16,7 +16,7 @@
     "brand": "PDF & Docs",
     "tagline": "Outils locaux 100%",
     "badge": "100% local",
-    "privacy": "Aucun fichier n'est jamais envoyé sur un serveur. Tout le traitement se fait dans votre navigateur.",
+    "privacy": "Les fichiers PDF et images ne sont jamais envoyés. Le Bouclier de liens stocke uniquement l'URL cible jusqu'à expiration.",
     "legal": "Mentions légales & Confidentialité",
     "copyright": "© {year} made by {author}"
   },
@@ -45,7 +45,8 @@
     "secrets": { "name": "Générateur de secrets", "description": "UUID, clés API, tokens, mots de passe" },
     "hash": { "name": "Hash", "description": "Calculez le hash d'un texte ou fichier" },
     "json-formatter": { "name": "JSON Formatter", "description": "Formatez et validez du JSON" },
-    "twitter-video": { "name": "Téléchargeur X", "description": "Téléchargez les vidéos de X/Twitter" }
+    "twitter-video": { "name": "Téléchargeur X", "description": "Téléchargez les vidéos de X/Twitter" },
+    "link-shield": { "name": "Bouclier de liens", "description": "Masquez une URL aux bots et aux IA" }
   },
   "common": {
     "download": "Télécharger",
@@ -380,6 +381,39 @@
       "action": "Appliquer le filigrane",
       "error": "Erreur lors de l'application du filigrane : {message}."
     },
+    "linkShield": {
+      "title": "Bouclier de liens",
+      "description": "Transformez une URL en lien non devinable. Les bots et les IA ne voient que le nom de l'outil ; un humain passe un captcha pour obtenir la destination.",
+      "serverNotice": "Cet outil stocke uniquement l'URL de destination sur le serveur, jusqu'à expiration. Le lien public contient le nom de l'outil. Aucune métadonnée de la page cible n'est copiée.",
+      "noUrlError": "Veuillez coller une URL http(s).",
+      "captchaRequired": "Validez le captcha avant de générer le lien.",
+      "apiError": "Une erreur est survenue.",
+      "networkError": "Erreur réseau. Vérifiez votre connexion.",
+      "copyError": "Impossible de copier le lien.",
+      "urlLabel": "URL à protéger",
+      "urlPlaceholder": "https://exemple.com/page",
+      "urlHint": "Seuls les liens http et https sont acceptés.",
+      "ttlLabel": "Durée de vie",
+      "ttl1": "1 jour",
+      "ttl7": "7 jours (recommandé)",
+      "ttl30": "30 jours",
+      "processing": "Génération...",
+      "action": "Créer le lien protégé",
+      "resultLabel": "Lien à partager",
+      "expiresAt": "Expire le {date}"
+    },
+    "linkShieldGate": {
+      "title": "Bouclier de liens",
+      "description": "Vérification humaine requise. La destination n'est révélée qu'après le captcha.",
+      "notice": "Ce lien a été protégé par Bouclier de liens. Les robots et les IA ne reçoivent pas l'URL cible.",
+      "captchaRequired": "Validez le captcha pour continuer.",
+      "apiError": "Une erreur est survenue.",
+      "networkError": "Erreur réseau. Vérifiez votre connexion.",
+      "processing": "Vérification...",
+      "action": "Vérifier et révéler le lien",
+      "revealed": "Destination :",
+      "open": "Ouvrir le lien"
+    },
     "twitterVideo": {
       "title": "Téléchargeur X / Twitter",
       "description": "Collez le lien d'un post pour récupérer la vidéo en MP4.",
@@ -496,6 +530,15 @@
         "title": "Filigrane PDF et images — JPG, PNG, HEIC",
         "description": "Ajoutez un filigrane diagonal sur vos PDF et images (JPG, PNG, HEIC). 100% local, 100 caractères maximum.",
         "keywords": ["filigrane PDF", "watermark PDF", "filigrane image", "watermark JPG", "filigrane PNG", "filigrane HEIC"]
+      },
+      "link-shield": {
+        "title": "Bouclier de liens — Masquer une URL aux bots et aux IA",
+        "description": "Créez un lien non devinable protégé par captcha. Les métadonnées ne mentionnent que le nom de l'outil, jamais la page cible.",
+        "keywords": ["lien protégé", "anti-bot", "captcha lien", "obfusquer URL", "bouclier de liens"]
+      },
+      "link-shield-gate": {
+        "title": "Bouclier de liens — Vérification humaine requise",
+        "description": "Bouclier de liens. Vérification humaine requise pour accéder à la destination."
       }
     }
   },
@@ -510,28 +553,29 @@
     "editor": {
       "title": "Éditeur du site",
       "p1": "Boîte à Outils PDF & Documents est un service web gratuit proposé sous forme d'application web progressive (PWA).",
-      "p2": "Ce service est hébergé de manière entièrement statique. Aucune donnée personnelle n'est collectée, stockée ou traitée sur un serveur."
+      "p2": "Les outils PDF et images s'exécutent dans le navigateur. Le Bouclier de liens et le téléchargeur X/Twitter font appel à un serveur. Aucun fichier document n'est collecté."
     },
     "privacy": {
       "title": "Politique de confidentialité",
       "commitment": "Engagement fondamental",
-      "commitmentText": "Aucun fichier n'est jamais envoyé sur un serveur. Tout le traitement s'effectue localement dans votre navigateur web. Vos documents ne quittent jamais votre appareil.",
+      "commitmentText": "Aucun fichier PDF ou image n'est jamais envoyé sur un serveur. Le traitement de ces documents s'effectue localement dans votre navigateur. Ils ne quittent jamais votre appareil.",
+      "exceptionsText": "Exceptions : le téléchargeur X/Twitter proxyfie une URL vidéo, et le Bouclier de liens stocke uniquement l'URL de destination jusqu'à expiration, derrière un captcha. Aucune métadonnée de la page cible n'est recopiée.",
       "data": "Données traitées",
       "documents": "Documents PDF et images",
       "documentsText": "chargés temporairement en mémoire vive (RAM) de votre appareil pour être traités par les bibliothèques JavaScript côté client.",
       "persistence": "Aucune persistance",
-      "persistenceText": "les fichiers sont automatiquement supprimés de la mémoire lorsque vous fermez l'onglet, rechargez la page ou cliquez sur \"Fermer\" dans l'aperçu.",
+      "persistenceText": "les fichiers PDF et images sont automatiquement supprimés de la mémoire lorsque vous fermez l'onglet, rechargez la page ou cliquez sur \"Fermer\" dans l'aperçu. Les URL du Bouclier de liens sont effacées à l'expiration choisie (1 à 30 jours).",
       "collection": "Aucune collecte",
-      "collectionText": "nous ne collectons, ne stockons et ne transmettons aucun fichier, métadonnée ou contenu de document.",
+      "collectionText": "nous ne collectons, ne stockons et ne transmettons aucun fichier, métadonnée ou contenu de document. Le Bouclier de liens ne conserve que l'URL cible, pas le contenu de la page.",
       "cookies": "Cookies & traceurs",
-      "cookiesText": "Ce site utilise Umami, un outil d'analyse auto-hébergé et respectueux de la vie privée, pour compter les pages vues de manière anonyme. Umami ne dépose aucun cookie, ne trace pas les utilisateurs et ne collecte aucune donnée personnelle. Aucun autre cookie de traçage, pixel espion ou service d'analyse tierce (Google Analytics, etc.) n'est utilisé. Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
+      "cookiesText": "Ce site utilise Umami, un outil d'analyse auto-hébergé et respectueux de la vie privée, pour compter les pages vues de manière anonyme. Umami ne dépose aucun cookie, ne trace pas les utilisateurs et ne collecte aucune donnée personnelle. Le Bouclier de liens charge Cloudflare Turnstile pour le captcha. Aucun autre cookie de traçage, pixel espion ou service d'analyse tierce (Google Analytics, etc.) n'est utilisé. Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
       "hosting": "Hébergement",
-      "hostingText": "Le site est servi sous forme de fichiers statiques. Aucun traitement serveur n'est effectué sur vos documents. Les bibliothèques de traitement (pdf-lib, pdfjs-dist, jspdf) s'exécutent entièrement dans votre navigateur."
+      "hostingText": "Les documents PDF et images sont traités uniquement dans votre navigateur (pdf-lib, pdfjs-dist, jspdf). Le Bouclier de liens utilise un stockage éphémère (Vercel KV) pour l'URL cible. Aucun traitement serveur n'est effectué sur vos fichiers."
     },
     "terms": {
       "title": "Conditions d'utilisation",
       "purpose": "Objet du service",
-      "purposeText": "Boîte à Outils PDF & Documents fournit des utilitaires de manipulation de documents PDF et d'images, exécutés exclusivement côté client dans le navigateur de l'utilisateur.",
+      "purposeText": "Boîte à Outils PDF & Documents fournit des utilitaires de manipulation de documents PDF et d'images, exécutés côté client, ainsi que quelques services serveur (téléchargeur X/Twitter, Bouclier de liens).",
       "responsibilities": "Responsabilités de l'utilisateur",
       "resp1": "Vous êtes seul responsable des documents que vous traitez avec cet outil.",
       "resp2": "Ce service est fourni à titre indicatif. Nous recommandons de conserver une copie de sauvegarde de vos documents originaux avant toute modification.",
@@ -555,11 +599,13 @@
       "jszip": "Compression ZIP",
       "lucide": "Icônes",
       "radix": "Primitives accessibles",
+      "turnstile": "Captcha anti-bot",
+      "kv": "Stockage éphémère des URLs protégées",
       "note": "Aucune métadonnée de ces bibliothèques n'est insérée dans les documents que vous générez."
     },
     "gdpr": {
       "title": "Droit à l'oubli & suppression",
-      "p1": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Comme aucune donnée n'est collectée, aucune action n'est nécessaire de votre part : vos documents existent uniquement dans votre navigateur et disparaissent automatiquement.",
+      "p1": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Les documents PDF et images existent uniquement dans votre navigateur. Les URL du Bouclier de liens disparaissent à l'expiration ; pour une suppression anticipée, contactez-nous avec le lien public.",
       "p2": "Pour toute question relative à la confidentialité, vous pouvez nous contacter (voir ci-dessous)."
     },
     "contact": {

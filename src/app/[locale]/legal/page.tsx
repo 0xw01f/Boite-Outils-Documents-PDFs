@@ -55,6 +55,7 @@ export default async function LegalPage({ params }: { params: Promise<{ locale: 
         <CardContent className="space-y-4 text-sm leading-relaxed">
           <p className="font-semibold text-base">{t("privacy.commitment")}</p>
           <p>{t("privacy.commitmentText")}</p>
+          <p>{t("privacy.exceptionsText")}</p>
 
           <h3 className="font-semibold text-base">{t("privacy.data")}</h3>
           <ul className="list-disc pl-5 space-y-1">
@@ -124,6 +125,8 @@ export default async function LegalPage({ params }: { params: Promise<{ locale: 
             <li className="p-2 rounded-md bg-muted/50"><strong>JSZip</strong> — {t("credits.jszip")}</li>
             <li className="p-2 rounded-md bg-muted/50"><strong>Lucide React</strong> — {t("credits.lucide")}</li>
             <li className="p-2 rounded-md bg-muted/50"><strong>Radix UI</strong> — {t("credits.radix")}</li>
+            <li className="p-2 rounded-md bg-muted/50"><strong>Cloudflare Turnstile</strong> — {t("credits.turnstile")}</li>
+            <li className="p-2 rounded-md bg-muted/50"><strong>Vercel KV</strong> — {t("credits.kv")}</li>
           </ul>
           <p className="text-muted-foreground">{t("credits.note")}</p>
         </CardContent>

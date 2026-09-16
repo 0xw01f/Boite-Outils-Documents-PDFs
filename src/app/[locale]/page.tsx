@@ -23,6 +23,7 @@ import {
   Braces,
   Download,
   Stamp,
+  Link2,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -30,7 +31,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Combine, Scissors, Minimize2, RotateCw,
   Trash2, ArrowUpDown, FileOutput, FilePlus,
   ArrowRightLeft, Maximize, Tags,
-  Fingerprint, Hash, Braces, Download, Stamp,
+  Fingerprint, Hash, Braces, Download, Stamp, Link2,
 };
 
 const categoryIconMap: Record<string, React.ComponentType<{ className?: string }>> = {

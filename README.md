@@ -25,6 +25,8 @@
 - Générateur de secrets (UUID, clés API, tokens, mots de passe)
 - Hash de texte et fichiers
 - Formateur et validateur JSON
+- Téléchargeur X/Twitter
+- Bouclier de liens (URL non devinable + captcha anti-bot / anti-IA)
 
 ---
 
@@ -38,13 +40,16 @@ Tous les traitements s'exécutent **exclusivement dans votre navigateur** via de
 - [`browser-image-compression`](https://github.com/Donaldcwl/browser-image-compression) — compression image
 - [`jszip`](https://stuk.github.io/jszip/) — création d'archives ZIP
 
-**Aucun serveur backend. Aucune donnée n'est envoyée, stockée ou traitée à l'extérieur.**
+Les outils PDF et images s'exécutent **dans le navigateur**. Deux exceptions serveur :
+
+- Téléchargeur X/Twitter (proxy vidéo)
+- **Bouclier de liens** : stocke uniquement l'URL de destination (Vercel KV) jusqu'à expiration, derrière Cloudflare Turnstile. Les metatags et l'URL publique mentionnent le nom de l'outil, jamais la page cible.
 
 ---
 
 ## 🛠 Stack technique
 
-- [Next.js](https://nextjs.org/) 16 (App Router, export statique)
+- [Next.js](https://nextjs.org/) 16 (App Router)
 - [React](https://react.dev/) 19
 - [TypeScript](https://www.typescriptlang.org/) 5
 - [Tailwind CSS](https://tailwindcss.com/) 4
@@ -72,6 +77,19 @@ npm run build
 
 > **Note** : Le script `postinstall` copie `pdf.worker.min.mjs` depuis `node_modules/pdfjs-dist/build/` vers `public/`. Ce fichier binaire (~1,2 Mo) n'est pas versionné.
 
+### Bouclier de liens (variables d'environnement)
+
+```bash
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
+TURNSTILE_SECRET_KEY=
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+# optionnel, sinon l'origine de la requête est utilisée
+NEXT_PUBLIC_SITE_URL=https://argus-labs.fr
+```
+
+En développement local, sans KV ni Turnstile, le mapping est gardé en mémoire et le captcha est contourné. En production, KV et Turnstile sont obligatoires.
+
 ---
 
 ## 🏗 Architecture
@@ -91,7 +109,8 @@ src/
 ├── features/               # Modules fonctionnels isolés
 │   ├── merge-pdf/
 │   ├── compress-pdf/
-│   ├── watermark-pdf/
+│   ├── watermark/
+│   ├── link-shield/
 │   ├── secrets/
 │   ├── hash/
 │   └── ...

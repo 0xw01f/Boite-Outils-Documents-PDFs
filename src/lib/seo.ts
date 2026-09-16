@@ -21,3 +21,29 @@ export async function getToolMetadata(toolId: string, locale: string): Promise<M
     robots: { index: true, follow: true },
   };
 }
+
+export async function getLinkShieldGateMetadata(locale: string): Promise<Metadata> {
+  const m = await getTranslations({ locale, namespace: "metadata" });
+  const t = await getTranslations({ locale, namespace: "seo.tools" });
+
+  return {
+    metadataBase: new URL("https://argus-labs.fr"),
+    title: t("link-shield-gate.title"),
+    description: t("link-shield-gate.description"),
+    authors: [{ name: m("author") }],
+    creator: m("author"),
+    openGraph: {
+      type: "website",
+      locale: m("locale"),
+      siteName: m("siteName"),
+      title: t("link-shield-gate.title"),
+      description: t("link-shield-gate.description"),
+    },
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+      googleBot: { index: false, follow: false, noimageindex: true },
+    },
+  };
+}

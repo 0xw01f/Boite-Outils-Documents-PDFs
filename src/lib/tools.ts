@@ -50,6 +50,7 @@ export const toolCategories: ToolCategoryDefinition[] = [
       { id: "hash", icon: "Hash", href: "/tools/hash" },
       { id: "json-formatter", icon: "Braces", href: "/tools/json-formatter" },
       { id: "twitter-video", icon: "Download", href: "/tools/twitter-video" },
+      { id: "link-shield", icon: "Link2", href: "/tools/link-shield" },
     ],
   },
 ];
