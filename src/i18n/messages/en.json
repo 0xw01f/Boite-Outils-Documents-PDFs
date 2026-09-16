@@ -36,6 +36,7 @@
     "extract-pages": { "name": "Extract Pages", "description": "Extract specific pages" },
     "pdf-to-images": { "name": "PDF to Images", "description": "Convert a PDF to images" },
     "images-to-pdf": { "name": "Images to PDF", "description": "Combine images into a PDF" },
+    "watermark": { "name": "Watermark", "description": "Add a watermark to PDF, JPG, PNG, HEIC" },
     "compress-image": { "name": "Compress Image", "description": "Reduce size without losing quality" },
     "convert-image": { "name": "Convert Format", "description": "Change your image format" },
     "resize-image": { "name": "Resize", "description": "Change your image dimensions" },
@@ -365,6 +366,20 @@
       "action": "Format",
       "resultLabel": "Result:"
     },
+    "watermark": {
+      "title": "Watermark",
+      "description": "Add a diagonal watermark to a PDF, JPG, PNG or HEIC. 100% local processing, 100 characters max.",
+      "noFileError": "Please select a JPG, PNG, HEIC or PDF file.",
+      "unsupportedError": "Unsupported format. Use a JPG, PNG, HEIC or PDF.",
+      "emptyTextError": "Please enter the watermark text.",
+      "textLabel": "Watermark text",
+      "textPlaceholder": "CECI EST UN FILIGRANE",
+      "charCount": "{current} / {max}",
+      "previewLabel": "Style preview",
+      "processing": "Applying...",
+      "action": "Apply watermark",
+      "error": "Error while applying the watermark: {message}."
+    },
     "twitterVideo": {
       "title": "X / Twitter Downloader",
       "description": "Paste a post link to download the video as MP4.",
@@ -476,6 +491,11 @@
         "title": "X / Twitter Downloader — Download a video",
         "description": "Download X (Twitter) videos as MP4. Paste the post link and get the video.",
         "keywords": ["download Twitter video", "X downloader", "Twitter MP4", "X video", "download X video"]
+      },
+      "watermark": {
+        "title": "PDF and image watermark — JPG, PNG, HEIC",
+        "description": "Add a diagonal watermark to your PDFs and images (JPG, PNG, HEIC). 100% local, 100 characters max.",
+        "keywords": ["PDF watermark", "image watermark", "JPG watermark", "PNG watermark", "HEIC watermark"]
       }
     }
   },

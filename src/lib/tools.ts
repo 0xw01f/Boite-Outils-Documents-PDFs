@@ -24,12 +24,14 @@ export const toolCategories: ToolCategoryDefinition[] = [
       { id: "extract-pages", icon: "FileOutput", href: "/tools/extract-pages" },
       { id: "pdf-to-images", icon: "Image", href: "/tools/pdf-to-images" },
       { id: "images-to-pdf", icon: "FilePlus", href: "/tools/images-to-pdf" },
+      { id: "watermark", icon: "Stamp", href: "/tools/watermark" },
     ],
   },
   {
     id: "images",
     icon: "Image",
     tools: [
+      { id: "watermark", icon: "Stamp", href: "/tools/watermark" },
       { id: "compress-image", icon: "Minimize2", href: "/tools/compress-image" },
       { id: "convert-image", icon: "ArrowRightLeft", href: "/tools/convert-image" },
       { id: "resize-image", icon: "Maximize", href: "/tools/resize-image" },

@@ -36,6 +36,7 @@
     "extract-pages": { "name": "Extraire pages", "description": "Extrayez des pages spécifiques" },
     "pdf-to-images": { "name": "PDF -> Images", "description": "Convertissez un PDF en images" },
     "images-to-pdf": { "name": "Images -> PDF", "description": "Combinez des images en PDF" },
+    "watermark": { "name": "Filigrane", "description": "Ajoutez un filigrane sur PDF, JPG, PNG, HEIC" },
     "compress-image": { "name": "Compresser Image", "description": "Réduisez la taille sans perdre en qualité" },
     "convert-image": { "name": "Convertir Format", "description": "Changez le format de vos images" },
     "resize-image": { "name": "Redimensionner", "description": "Changez les dimensions de vos images" },
@@ -365,6 +366,20 @@
       "action": "Formater",
       "resultLabel": "Résultat :"
     },
+    "watermark": {
+      "title": "Filigrane",
+      "description": "Ajoutez un filigrane diagonal sur un PDF, JPG, PNG ou HEIC. Traitement 100% local, 100 caractères maximum.",
+      "noFileError": "Veuillez sélectionner un fichier JPG, PNG, HEIC ou PDF.",
+      "unsupportedError": "Format non pris en charge. Utilisez un JPG, PNG, HEIC ou PDF.",
+      "emptyTextError": "Veuillez saisir le texte du filigrane.",
+      "textLabel": "Texte du filigrane",
+      "textPlaceholder": "CECI EST UN FILIGRANE",
+      "charCount": "{current} / {max}",
+      "previewLabel": "Aperçu du style",
+      "processing": "Application...",
+      "action": "Appliquer le filigrane",
+      "error": "Erreur lors de l'application du filigrane : {message}."
+    },
     "twitterVideo": {
       "title": "Téléchargeur X / Twitter",
       "description": "Collez le lien d'un post pour récupérer la vidéo en MP4.",
@@ -476,6 +491,11 @@
         "title": "Téléchargeur X / Twitter — Télécharger une vidéo",
         "description": "Téléchargez les vidéos de X (Twitter) au format MP4. Collez le lien du post, récupérez la vidéo.",
         "keywords": ["télécharger vidéo Twitter", "téléchargeur X", "MP4 Twitter", "vidéo X", "download Twitter video"]
+      },
+      "watermark": {
+        "title": "Filigrane PDF et images — JPG, PNG, HEIC",
+        "description": "Ajoutez un filigrane diagonal sur vos PDF et images (JPG, PNG, HEIC). 100% local, 100 caractères maximum.",
+        "keywords": ["filigrane PDF", "watermark PDF", "filigrane image", "watermark JPG", "filigrane PNG", "filigrane HEIC"]
       }
     }
   },

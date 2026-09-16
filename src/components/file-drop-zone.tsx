@@ -52,10 +52,14 @@ export function FileDropZone({
         if (accept === "*") return true;
         return accept.split(",").some((type) => {
           const trimmed = type.trim();
+          const name = f.name.toLowerCase();
           if (trimmed.endsWith("/*")) {
             return f.type.startsWith(trimmed.replace("/*", ""));
           }
-          return f.type === trimmed || f.name.endsWith(trimmed.replace("*", ""));
+          if (trimmed.startsWith(".")) {
+            return name.endsWith(trimmed.toLowerCase());
+          }
+          return f.type === trimmed || name.endsWith(trimmed.replace("*", "").toLowerCase());
         });
       });
 
