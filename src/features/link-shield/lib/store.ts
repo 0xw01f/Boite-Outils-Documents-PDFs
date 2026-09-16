@@ -10,6 +10,22 @@ import {
 export type { ShieldRecord } from "@/features/link-shield/lib/constants";
 export { isValidLinkId } from "@/features/link-shield/lib/constants";
 
+export class LinkShieldStorageError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LinkShieldStorageError";
+  }
+}
+
+export function isStorageFailure(err: unknown): boolean {
+  if (err instanceof LinkShieldStorageError) return true;
+  if (err && typeof err === "object" && "name" in err && (err as { name: string }).name === "LinkShieldStorageError") {
+    return true;
+  }
+  const msg = err instanceof Error ? err.message : String(err);
+  return /ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|Socket closed|Connection is closed|REDIS_URL/i.test(msg);
+}
+
 type MemoryStore = {
   links: Map<string, ShieldRecord>;
   rate: Map<string, { count: number; resetAt: number }>;
@@ -32,17 +48,32 @@ function memory(): MemoryStore {
 }
 
 function redisUrl(): string | undefined {
-  return process.env.REDIS_URL?.trim() || undefined;
+  const direct = process.env.REDIS_URL?.trim();
+  if (direct) return direct;
+
+  const host = process.env.REDIS_HOST?.trim();
+  if (!host) return undefined;
+
+  const port = process.env.REDIS_PORT?.trim() || "6379";
+  const password = process.env.REDIS_PASSWORD?.trim() || process.env.REDIS_PASS?.trim();
+  const username = process.env.REDIS_USERNAME?.trim() || process.env.REDIS_USER?.trim();
+
+  if (password) {
+    const user = username ? encodeURIComponent(username) : "";
+    const pass = encodeURIComponent(password);
+    return `redis://${user}:${pass}@${host}:${port}`;
+  }
+  return `redis://${host}:${port}`;
 }
 
 function useMemoryFallback(): boolean {
-  return !redisUrl();
+  return !redisUrl() && process.env.NODE_ENV !== "production";
 }
 
 async function getRedis(): Promise<RedisClientType> {
   const url = redisUrl();
   if (!url) {
-    throw new Error("REDIS_URL is not set");
+    throw new LinkShieldStorageError("REDIS_URL is not set");
   }
   if (globalStore.__linkShieldRedis?.isOpen) {
     return globalStore.__linkShieldRedis;
@@ -52,19 +83,22 @@ async function getRedis(): Promise<RedisClientType> {
     client.on("error", (err) => {
       console.error("Redis error", err);
     });
-    globalStore.__linkShieldRedisPromise = client.connect().then(() => {
-      globalStore.__linkShieldRedis = client;
-      return client;
-    });
+    globalStore.__linkShieldRedisPromise = client
+      .connect()
+      .then(() => {
+        globalStore.__linkShieldRedis = client;
+        return client;
+      })
+      .catch((err) => {
+        globalStore.__linkShieldRedisPromise = undefined;
+        throw new LinkShieldStorageError(err instanceof Error ? err.message : "Redis connection failed");
+      });
   }
   return globalStore.__linkShieldRedisPromise;
 }
 
 export async function saveLink(id: string, record: ShieldRecord, ttlSeconds: number): Promise<void> {
   if (useMemoryFallback()) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("REDIS_URL is not set");
-    }
     memory().links.set(id, record);
     return;
   }

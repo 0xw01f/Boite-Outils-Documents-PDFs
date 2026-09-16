@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       apple: "/apple-touch-icon.png",
       shortcut: "/favicon.ico",
     },
-    manifest: `/${locale}/manifest.json`,
+    manifest: `/${locale}/manifest.webmanifest`,
     robots: {
       index: true,
       follow: true,

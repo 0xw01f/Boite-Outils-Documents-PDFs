@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { TurnstileWidget } from "@/features/link-shield/components/turnstile-widget";
 import { DEFAULT_TTL_DAYS } from "@/features/link-shield/lib/constants";
+import { rewriteLocalShareUrl } from "@/features/link-shield/lib/url";
 
 export function LinkShieldTool() {
   const t = useTranslations("tool.linkShield");
@@ -65,7 +66,7 @@ export function LinkShieldTool() {
         setError(data.error || t("apiError"));
         return;
       }
-      setShareUrl(data.shareUrl as string);
+      setShareUrl(rewriteLocalShareUrl(data.shareUrl as string));
       setExpiresAt(typeof data.expiresAt === "number" ? data.expiresAt : null);
     } catch {
       setError(t("networkError"));

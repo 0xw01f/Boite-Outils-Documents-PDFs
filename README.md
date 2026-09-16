@@ -83,13 +83,19 @@ Hébergement type Coolify : ajoute un service **Redis**, puis relie-le à l'app.
 
 ```bash
 REDIS_URL=redis://:MOT_DE_PASSE@redis:6379
+# si Coolify n'injecte pas REDIS_URL, ces variables suffisent aussi :
+# REDIS_HOST=redis
+# REDIS_PORT=6379
+# REDIS_PASSWORD=MOT_DE_PASSE
 TURNSTILE_SECRET_KEY=
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=
-# optionnel, sinon l'origine de la requête est utilisée
-NEXT_PUBLIC_SITE_URL=https://argus-labs.fr
+SITE_URL=https://tools.argus-labs.fr
+NEXT_PUBLIC_SITE_URL=https://tools.argus-labs.fr
 ```
 
-En développement local, sans Redis ni Turnstile, le mapping est gardé en mémoire et le captcha est contourné. En production, `REDIS_URL` et Turnstile sont obligatoires.
+Le service Redis doit être **sur le même réseau Docker** que l'app (Coolify : connecter la ressource Redis à l'application). `redis` dans l'URL est le hostname interne, pas une URL publique.
+
+En développement local, sans Redis ni Turnstile, le mapping est gardé en mémoire et le captcha est contourné. En production, Redis et Turnstile sont obligatoires.
 
 ---
 

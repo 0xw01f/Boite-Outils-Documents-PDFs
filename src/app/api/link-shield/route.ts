@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { nanoid } from "nanoid";
-import { allowCreate, saveLink } from "@/features/link-shield/lib/store";
+import { allowCreate, isStorageFailure, saveLink } from "@/features/link-shield/lib/store";
 import { DEFAULT_TTL_DAYS } from "@/features/link-shield/lib/constants";
 import { verifyTurnstile } from "@/features/link-shield/lib/turnstile";
 import { clampTtlDays, clientIp, normalizeTargetUrl, publicShareUrl } from "@/features/link-shield/lib/url";
@@ -16,6 +16,7 @@ const messages: Record<
     invalidUrl: string;
     captchaFailed: string;
     rateLimited: string;
+    storageError: string;
     internalError: string;
   }
 > = {
@@ -23,12 +24,14 @@ const messages: Record<
     invalidUrl: "URL invalide. Seuls les liens http(s) sont acceptés.",
     captchaFailed: "Vérification anti-bot échouée. Réessayez le captcha.",
     rateLimited: "Trop de créations. Réessayez plus tard.",
+    storageError: "Redis inaccessible. Vérifiez REDIS_URL (ou REDIS_HOST) dans Coolify.",
     internalError: "Erreur interne.",
   },
   en: {
     invalidUrl: "Invalid URL. Only http(s) links are accepted.",
     captchaFailed: "Bot check failed. Please retry the captcha.",
     rateLimited: "Too many creations. Try again later.",
+    storageError: "Redis is unreachable. Check REDIS_URL (or REDIS_HOST) in Coolify.",
     internalError: "Internal error.",
   },
 };
@@ -69,10 +72,14 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       id,
-      shareUrl: publicShareUrl(req.nextUrl.origin, requestedLocale, id),
+      shareUrl: publicShareUrl(req, requestedLocale, id),
       expiresAt,
     });
-  } catch {
+  } catch (err) {
+    console.error("link-shield create failed", err);
+    if (isStorageFailure(err)) {
+      return NextResponse.json({ error: t.storageError }, { status: 503 });
+    }
     return NextResponse.json({ error: t.internalError }, { status: 500 });
   }
 }
