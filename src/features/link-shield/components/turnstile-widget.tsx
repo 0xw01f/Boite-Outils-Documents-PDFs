@@ -48,10 +48,16 @@ function loadTurnstileScript(): Promise<void> {
   return scriptPromise;
 }
 
+function devToken(): string | null {
+  return process.env.NODE_ENV !== "production" ? "dev-bypass" : null;
+}
+
 export function TurnstileWidget({
   onToken,
+  resetKey = 0,
 }: {
   onToken: (token: string | null) => void;
+  resetKey?: number;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -62,7 +68,7 @@ export function TurnstileWidget({
 
   useEffect(() => {
     if (!siteKey) {
-      onTokenRef.current(process.env.NODE_ENV !== "production" ? "dev-bypass" : null);
+      onTokenRef.current(devToken());
       return;
     }
 
@@ -92,9 +98,13 @@ export function TurnstileWidget({
     };
   }, [siteKey]);
 
-  if (!siteKey && process.env.NODE_ENV === "production") {
-    return null;
-  }
+  useEffect(() => {
+    if (!resetKey) return;
+    onTokenRef.current(siteKey ? null : devToken());
+    if (siteKey && widgetIdRef.current && window.turnstile) {
+      window.turnstile.reset(widgetIdRef.current);
+    }
+  }, [resetKey, siteKey]);
 
   if (!siteKey) {
     return null;

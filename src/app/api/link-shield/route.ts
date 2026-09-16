@@ -21,14 +21,14 @@ const messages: Record<
   }
 > = {
   fr: {
-    invalidUrl: "URL invalide. Seuls les liens http(s) sont acceptés.",
+    invalidUrl: "Lien invalide. Un domaine (exemple.com) ou une URL http(s) est accepté.",
     captchaFailed: "Vérification anti-bot échouée. Réessayez le captcha.",
     rateLimited: "Trop de créations. Réessayez plus tard.",
     storageError: "Redis inaccessible. Vérifiez REDIS_URL (ou REDIS_HOST) dans Coolify.",
     internalError: "Erreur interne.",
   },
   en: {
-    invalidUrl: "Invalid URL. Only http(s) links are accepted.",
+    invalidUrl: "Invalid link. A domain (example.com) or an http(s) URL is accepted.",
     captchaFailed: "Bot check failed. Please retry the captcha.",
     rateLimited: "Too many creations. Try again later.",
     storageError: "Redis is unreachable. Check REDIS_URL (or REDIS_HOST) in Coolify.",
@@ -52,13 +52,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    if (!(await verifyTurnstile(body?.turnstileToken, ip))) {
-      return NextResponse.json({ error: t.captchaFailed }, { status: 400 });
-    }
-
     const url = normalizeTargetUrl(body?.url);
     if (!url) {
       return NextResponse.json({ error: t.invalidUrl }, { status: 400 });
+    }
+
+    if (!(await verifyTurnstile(body?.turnstileToken, ip))) {
+      return NextResponse.json({ error: t.captchaFailed }, { status: 400 });
     }
 
     const ttlDays = clampTtlDays(body?.ttlDays ?? DEFAULT_TTL_DAYS);

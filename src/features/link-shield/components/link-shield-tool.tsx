@@ -16,7 +16,7 @@ import {
 import { TurnstileWidget } from "@/features/link-shield/components/turnstile-widget";
 import { LinkShieldShell } from "@/features/link-shield/components/link-shield-shell";
 import { DEFAULT_TTL_DAYS } from "@/features/link-shield/lib/constants";
-import { rewriteLocalShareUrl } from "@/features/link-shield/lib/url";
+import { normalizeTargetUrl, rewriteLocalShareUrl } from "@/features/link-shield/lib/url";
 
 export function LinkShieldTool() {
   const t = useTranslations("tool.linkShield");
@@ -24,6 +24,7 @@ export function LinkShieldTool() {
   const locale = useLocale();
   const [url, setUrl] = useState("");
   const [ttlDays, setTtlDays] = useState(String(DEFAULT_TTL_DAYS));
+  const [captchaReset, setCaptchaReset] = useState(0);
   const [token, setToken] = useState<string | null>(
     process.env.NODE_ENV !== "production" && !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
       ? "dev-bypass"
@@ -35,9 +36,15 @@ export function LinkShieldTool() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const resetCaptcha = () => {
+    setToken(null);
+    setCaptchaReset((n) => n + 1);
+  };
+
   const create = async () => {
-    if (!url.trim()) {
-      setError(t("noUrlError"));
+    const normalized = normalizeTargetUrl(url);
+    if (!normalized) {
+      setError(url.trim() ? t("invalidUrl") : t("noUrlError"));
       return;
     }
     if (!token) {
@@ -45,6 +52,7 @@ export function LinkShieldTool() {
       return;
     }
 
+    setUrl(normalized);
     setLoading(true);
     setError(null);
     setShareUrl(null);
@@ -54,13 +62,14 @@ export function LinkShieldTool() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          url: url.trim(),
+          url: normalized,
           ttlDays: Number(ttlDays),
           turnstileToken: token,
           locale,
         }),
       });
       const data = await res.json();
+      resetCaptcha();
       if (!res.ok) {
         setError(data.error || t("apiError"));
         return;
@@ -68,6 +77,7 @@ export function LinkShieldTool() {
       setShareUrl(rewriteLocalShareUrl(data.shareUrl as string));
       setExpiresAt(typeof data.expiresAt === "number" ? data.expiresAt : null);
     } catch {
+      resetCaptcha();
       setError(t("networkError"));
     } finally {
       setLoading(false);
@@ -129,7 +139,7 @@ export function LinkShieldTool() {
             </Select>
           </div>
 
-          <TurnstileWidget onToken={setToken} />
+          <TurnstileWidget key={captchaReset} resetKey={captchaReset} onToken={setToken} />
 
           {error && (
             <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">

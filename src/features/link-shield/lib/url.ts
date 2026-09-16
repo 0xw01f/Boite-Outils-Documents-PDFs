@@ -1,9 +1,19 @@
 import { MAX_TTL_DAYS, MAX_URL_LENGTH, MIN_TTL_DAYS } from "@/features/link-shield/lib/constants";
 
+const HAS_SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+
 export function normalizeTargetUrl(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
-  const trimmed = raw.trim();
+  let trimmed = raw.trim();
   if (!trimmed || trimmed.length > MAX_URL_LENGTH) return null;
+  if (/[\u0000-\u001f\u007f]/.test(trimmed)) return null;
+
+  if (trimmed.startsWith("//")) {
+    trimmed = `https:${trimmed}`;
+  } else if (!/^https?:\/\//i.test(trimmed)) {
+    if (HAS_SCHEME.test(trimmed)) return null;
+    trimmed = `https://${trimmed}`;
+  }
 
   let parsed: URL;
   try {
@@ -14,8 +24,18 @@ export function normalizeTargetUrl(raw: unknown): string | null {
 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
   if (parsed.username || parsed.password) return null;
+  if (!isPublicHttpHost(parsed.hostname)) return null;
 
   return parsed.toString();
+}
+
+function isPublicHttpHost(hostname: string): boolean {
+  const host = hostname.replace(/\.$/, "").toLowerCase();
+  if (!host || host.length > 253) return false;
+  if (host.includes(":")) return true;
+  if (host === "localhost") return true;
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(host)) return true;
+  return /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i.test(host);
 }
 
 export function clampTtlDays(value: unknown): number {

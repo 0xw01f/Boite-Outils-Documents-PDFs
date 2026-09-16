@@ -9,6 +9,7 @@ import { LinkShieldShell } from "@/features/link-shield/components/link-shield-s
 
 export function LinkShieldGate({ id }: { id: string }) {
   const t = useTranslations("tool.linkShieldGate");
+  const [captchaReset, setCaptchaReset] = useState(0);
   const [token, setToken] = useState<string | null>(
     process.env.NODE_ENV !== "production" && !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
       ? "dev-bypass"
@@ -17,6 +18,11 @@ export function LinkShieldGate({ id }: { id: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [targetUrl, setTargetUrl] = useState<string | null>(null);
+
+  const resetCaptcha = () => {
+    setToken(null);
+    setCaptchaReset((n) => n + 1);
+  };
 
   const reveal = async () => {
     if (!token) {
@@ -35,11 +41,13 @@ export function LinkShieldGate({ id }: { id: string }) {
       });
       const data = await res.json();
       if (!res.ok) {
+        resetCaptcha();
         setError(data.error || t("apiError"));
         return;
       }
       setTargetUrl(data.url as string);
     } catch {
+      resetCaptcha();
       setError(t("networkError"));
     } finally {
       setLoading(false);
@@ -64,7 +72,7 @@ export function LinkShieldGate({ id }: { id: string }) {
           {!targetUrl ? (
             <div className="space-y-5">
               <p className="text-center text-sm text-muted-foreground">{t("notice")}</p>
-              <TurnstileWidget onToken={setToken} />
+              <TurnstileWidget key={captchaReset} resetKey={captchaReset} onToken={setToken} />
               {error && (
                 <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
