@@ -32,6 +32,7 @@ export const toolCategories: ToolCategoryDefinition[] = [
     icon: "Image",
     tools: [
       { id: "watermark", icon: "Stamp", href: "/tools/watermark" },
+      { id: "metadata-manager", icon: "Tags", href: "/tools/metadata-manager" },
       { id: "compress-image", icon: "Minimize2", href: "/tools/compress-image" },
       { id: "convert-image", icon: "ArrowRightLeft", href: "/tools/convert-image" },
       { id: "resize-image", icon: "Maximize", href: "/tools/resize-image" },

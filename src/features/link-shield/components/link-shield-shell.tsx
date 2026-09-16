@@ -9,7 +9,7 @@ export function LinkShieldShell({ children }: { children: React.ReactNode }) {
   const locale = useLocale();
 
   return (
-    <div className="relative min-h-full overflow-hidden bg-background">
+    <div className="relative min-h-full bg-background">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.55]"
         style={{

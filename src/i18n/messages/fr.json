@@ -40,8 +40,8 @@
     "compress-image": { "name": "Compresser Image", "description": "Réduisez la taille sans perdre en qualité" },
     "convert-image": { "name": "Convertir Format", "description": "Changez le format de vos images" },
     "resize-image": { "name": "Redimensionner", "description": "Changez les dimensions de vos images" },
-    "metadata-manager": { "name": "Métadonnées PDF", "description": "Lire, modifier ou supprimer" },
-    "remove-metadata": { "name": "Supprimer les métadonnées", "description": "Nettoyez les métadonnées d'un PDF" },
+    "metadata-manager": { "name": "Métadonnées", "description": "PDF, images, Word, Excel, PowerPoint" },
+    "remove-metadata": { "name": "Supprimer les métadonnées", "description": "Nettoyez PDF, images et documents Office" },
     "secrets": { "name": "Générateur de secrets", "description": "UUID, clés API, tokens, mots de passe" },
     "hash": { "name": "Hash", "description": "Calculez le hash d'un texte ou fichier" },
     "json-formatter": { "name": "JSON Formatter", "description": "Formatez et validez du JSON" },
@@ -118,7 +118,8 @@
     "imageAlt": "Aperçu",
     "pageAlt": "Page {page}",
     "imagesSummary": "{count, plural, one {# image générée} other {# images générées}}. Les images sont compressées dans un fichier ZIP.",
-    "galleryPage": "Page {page}"
+    "galleryPage": "Page {page}",
+    "fileReady": "Le fichier est prêt. L'aperçu n'est pas disponible pour ce format."
   },
   "tool": {
     "mergePdf": {
@@ -281,30 +282,47 @@
       "error": "Erreur lors du redimensionnement."
     },
     "metadataManager": {
-      "title": "Métadonnées PDF",
-      "description": "Visualisez, modifiez ou supprimez les métadonnées de vos PDF.",
-      "noFileError": "Veuillez sélectionner un fichier PDF.",
-      "loadError": "Impossible de lire les métadonnées du PDF.",
+      "title": "Métadonnées",
+      "description": "Visualisez, modifiez ou supprimez les métadonnées d'un PDF, d'une image ou d'un document Office. Tout se fait dans le navigateur.",
+      "noFileError": "Veuillez sélectionner un fichier.",
+      "loadError": "Impossible de lire les métadonnées de ce fichier.",
+      "unsupportedError": "Format non pris en charge (SVG, HTML, scripts et fichiers Office avec macros exclus).",
       "viewTab": "Visualiser",
       "editTab": "Modifier",
       "modified": "modifié",
+      "kindLabel": "Type détecté : {kind}",
+      "kinds": {
+        "pdf": "PDF",
+        "jpeg": "JPEG",
+        "png": "PNG",
+        "webp": "WebP",
+        "heic": "HEIC",
+        "gif": "GIF",
+        "office": "Document Office"
+      },
       "titleLabel": "Titre",
       "authorLabel": "Auteur",
       "subjectLabel": "Sujet",
       "keywordsLabel": "Mots-clés",
       "creatorLabel": "Créateur",
       "producerLabel": "Producteur",
+      "copyrightLabel": "Copyright",
+      "gpsLabel": "GPS (lecture seule)",
       "empty": "—",
       "creationDateLabel": "Date de création",
       "modificationDateLabel": "Date de modification",
       "editHint": "Modifiez les champs ci-dessous puis cliquez sur \"Appliquer les modifications\".",
       "emptyHint": "Laissez un champ vide pour le supprimer.",
+      "localHint": "Aucun fichier n'est envoyé sur un serveur.",
+      "gpsHint": "Les coordonnées GPS sont affichées mais jamais réécrites.",
+      "rasterHint": "HEIC, WebP et GIF sont réencodés en JPEG à l'enregistrement (GPS et EXIF d'origine retirés).",
       "titlePlaceholder": "Titre du document",
       "authorPlaceholder": "Nom de l'auteur",
       "subjectPlaceholder": "Sujet du document",
       "keywordsPlaceholder": "mot1, mot2, mot3",
       "creatorPlaceholder": "Logiciel créateur",
       "producerPlaceholder": "Logiciel producteur",
+      "copyrightPlaceholder": "© Titulaire des droits",
       "processing": "Application...",
       "action": "Appliquer les modifications",
       "clear": "Tout effacer",
@@ -312,8 +330,9 @@
     },
     "removeMetadata": {
       "title": "Supprimer les métadonnées",
-      "description": "Nettoyez les métadonnées d'un PDF (auteur, titre, etc.).",
-      "noFileError": "Veuillez sélectionner un fichier PDF.",
+      "description": "Nettoyez les métadonnées d'un PDF, d'une image ou d'un document Office (auteur, GPS, titre, etc.). Traitement 100 % navigateur.",
+      "noFileError": "Veuillez sélectionner un fichier.",
+      "unsupportedError": "Format non pris en charge (SVG, HTML, scripts et fichiers Office avec macros exclus).",
       "processing": "Traitement...",
       "action": "Nettoyer",
       "error": "Erreur lors de la suppression des métadonnées."
@@ -505,14 +524,14 @@
         "keywords": ["redimensionner image", "taille image", "dimensions image", "resize photo"]
       },
       "remove-metadata": {
-        "title": "Supprimer les métadonnées d'un PDF",
-        "description": "Effacez toutes les métadonnées (auteur, titre, dates) d'un PDF en un clic. Nettoyage complet.",
-        "keywords": ["supprimer métadonnées PDF", "effacer métadonnées PDF", "anonymiser PDF"]
+        "title": "Supprimer les métadonnées — PDF, images, Office",
+        "description": "Effacez auteur, GPS, titre et autres métadonnées d'un PDF, d'une image ou d'un document Office. 100% local, dans le navigateur.",
+        "keywords": ["supprimer métadonnées", "effacer EXIF", "anonymiser PDF", "retirer GPS photo"]
       },
       "metadata-manager": {
-        "title": "Gérer les métadonnées d'un PDF",
-        "description": "Lisez, modifiez ou supprimez les métadonnées d'un PDF. Éditeur de métadonnées 100% local.",
-        "keywords": ["métadonnées PDF", "éditer métadonnées PDF", "modifier PDF", "infos PDF"]
+        "title": "Gérer les métadonnées — PDF, images, Office",
+        "description": "Lisez, modifiez ou supprimez les métadonnées d'un PDF, JPEG, PNG, WebP, HEIC ou document Word/Excel/PowerPoint. Éditeur 100% local.",
+        "keywords": ["métadonnées PDF", "EXIF", "éditer métadonnées", "GPS photo", "métadonnées Word"]
       },
       "hash": {
         "title": "Hash — Calculer l'empreinte numérique",

@@ -1,14 +1,42 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-
 import { useState, useCallback, useEffect } from "react";
-import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
 import { Download, AlertCircle, Eraser } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  EMPTY_METADATA,
+  detectKind,
+  isBlockedMetadataFile,
+  writeFileMetadata,
+} from "@/features/remove-metadata/lib/file-metadata";
+
+const ACCEPT = [
+  ".pdf",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".heic",
+  ".heif",
+  ".docx",
+  ".xlsx",
+  ".pptx",
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+].join(",");
 
 export function RemoveMetadataTool() {
   const t = useTranslations("tool.removeMetadata");
@@ -17,6 +45,7 @@ export function RemoveMetadataTool() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultName, setResultName] = useState("cleaned.bin");
 
   useEffect(() => {
     return () => {
@@ -24,11 +53,21 @@ export function RemoveMetadataTool() {
     };
   }, [resultUrl]);
 
-  const handleFilesSelected = useCallback((newFiles: File[]) => {
-    setFiles(newFiles.slice(0, 1));
-    setError(null);
-    setResultUrl(null);
-  }, []);
+  const handleFilesSelected = useCallback(
+    (newFiles: File[]) => {
+      const file = newFiles[0];
+      if (!file) return;
+      if (isBlockedMetadataFile(file) || !detectKind(file)) {
+        setError(t("unsupportedError"));
+        setFiles([]);
+        return;
+      }
+      setFiles([file]);
+      setError(null);
+      setResultUrl(null);
+    },
+    [t]
+  );
 
   const removeMetadata = async () => {
     if (files.length === 0) {
@@ -39,24 +78,10 @@ export function RemoveMetadataTool() {
     try {
       setProcessing(true);
       setError(null);
-
-      const file = files[0];
-      const bytes = await file.arrayBuffer();
-      const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
-
-      pdf.setTitle("");
-      pdf.setAuthor("");
-      pdf.setSubject("");
-      pdf.setKeywords([]);
-      pdf.setCreator("");
-      pdf.setProducer("");
-      pdf.setCreationDate(new Date(0));
-      pdf.setModificationDate(new Date(0));
-      const newBytes = await pdf.save();
-      const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const result = await writeFileMetadata(files[0], EMPTY_METADATA);
       if (resultUrl) URL.revokeObjectURL(resultUrl);
-      const url = URL.createObjectURL(blob);
-      setResultUrl(url);
+      setResultUrl(URL.createObjectURL(result.blob));
+      setResultName(result.fileName);
     } catch {
       setError(t("error"));
     } finally {
@@ -65,16 +90,16 @@ export function RemoveMetadataTool() {
   };
 
   return (
-    <ToolLayout
-      title={t("title")}
-      description={t("description")}
-    >
+    <ToolLayout title={t("title")} description={t("description")}>
       <div className="space-y-6">
         <FileDropZone
-          accept=".pdf,application/pdf"
+          accept={ACCEPT}
           onFilesSelected={handleFilesSelected}
           files={files}
-          onRemoveFile={() => setFiles([])}
+          onRemoveFile={() => {
+            setFiles([]);
+            setResultUrl(null);
+          }}
         />
 
         {error && (
@@ -96,7 +121,7 @@ export function RemoveMetadataTool() {
 
           {resultUrl && (
             <Button variant="outline" asChild className="w-full sm:w-auto">
-              <a href={resultUrl} download="cleaned.pdf">
+              <a href={resultUrl} download={resultName}>
                 <Download className="h-4 w-4 mr-2" />
                 {tCommon("download")}
               </a>

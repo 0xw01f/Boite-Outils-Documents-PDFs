@@ -7,7 +7,6 @@ export const WATERMARK_MAX_LENGTH = 100;
 const ANGLE_DEG = -38;
 const GRAY = { r: 160, g: 160, b: 160, a: 0.42 };
 const RED = { r: 224, g: 112, b: 112, a: 0.46 };
-const SHADOW = "rgba(0, 0, 0, 0.12)";
 
 export type WatermarkResult = {
   blob: Blob;
@@ -19,12 +18,15 @@ function clampText(text: string): string {
   return text.slice(0, WATERMARK_MAX_LENGTH).trim();
 }
 
-function fillSpacedText(
+function fillWavyText(
   ctx: CanvasRenderingContext2D,
   text: string,
   x: number,
   y: number,
-  letterSpacing: number
+  letterSpacing: number,
+  amplitude: number,
+  wavelength: number,
+  phase: number
 ) {
   const chars = Array.from(text);
   const widths = chars.map((ch) => ctx.measureText(ch).width);
@@ -34,7 +36,15 @@ function fillSpacedText(
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   for (let i = 0; i < chars.length; i++) {
-    ctx.fillText(chars[i], cursor + widths[i] / 2, y);
+    const midX = cursor + widths[i] / 2;
+    const theta = (midX / wavelength) * Math.PI * 2 + phase;
+    const waveY = y + Math.sin(theta) * amplitude;
+    const tilt = Math.cos(theta) * 0.34;
+    ctx.save();
+    ctx.translate(midX, waveY);
+    ctx.rotate(tilt);
+    ctx.fillText(chars[i], 0, 0);
+    ctx.restore();
     cursor += widths[i] + letterSpacing;
   }
 }
@@ -61,14 +71,17 @@ export function drawTiledWatermark(
   const minSide = Math.min(width, height);
   const fontSize = Math.max(12, minSide * 0.026);
   const letterSpacing = fontSize * 0.16;
-  const shadowOffset = Math.max(1.2, fontSize * 0.07);
+  const amplitude = fontSize * 0.58;
+  const wavelength = Math.max(fontSize * 8.5, 72);
+  const shadowX = fontSize * 0.16;
+  const shadowY = fontSize * 0.24;
 
   ctx.save();
   ctx.font = `500 ${fontSize}px Helvetica, Arial, "Helvetica Neue", sans-serif`;
 
   const textWidth = measureSpacedWidth(ctx, label, letterSpacing);
   const colStep = textWidth + fontSize * 3.4;
-  const rowStep = fontSize * 5.1;
+  const rowStep = fontSize * 5.6;
   const diagonal = Math.hypot(width, height);
   const cols = Math.ceil(diagonal / colStep) + 3;
   const rows = Math.ceil(diagonal / rowStep) + 3;
@@ -84,12 +97,29 @@ export function drawTiledWatermark(
       const x = startX + col * colStep;
       const y = startY + row * rowStep;
       const color = (row + col) % 2 === 0 ? GRAY : RED;
+      const phase = row * 0.85 + col * 0.45;
 
-      ctx.fillStyle = SHADOW;
-      fillSpacedText(ctx, label, x + shadowOffset, y + shadowOffset * 1.35, letterSpacing);
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+      ctx.shadowBlur = fontSize * 0.85;
+      ctx.shadowOffsetX = shadowX;
+      ctx.shadowOffsetY = shadowY;
+
+      ctx.fillStyle = "rgba(20, 20, 20, 0.42)";
+      fillWavyText(
+        ctx,
+        label,
+        x + shadowX * 0.6,
+        y + shadowY * 0.8,
+        letterSpacing,
+        amplitude,
+        wavelength,
+        phase
+      );
 
       ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
-      fillSpacedText(ctx, label, x, y, letterSpacing);
+      fillWavyText(ctx, label, x, y, letterSpacing, amplitude, wavelength, phase);
+      ctx.restore();
     }
   }
 

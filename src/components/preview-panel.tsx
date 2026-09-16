@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 interface PreviewPanelProps {
   url: string | null;
-  type: "pdf" | "image" | "images";
+  type: "pdf" | "image" | "images" | "file";
   fileName?: string;
   onClose?: () => void;
   imageUrls?: string[];
@@ -87,10 +87,14 @@ export function PreviewPanel({ url, type, fileName = "download", onClose, imageU
     return `${base}.${extension}`;
   };
 
+  const isFile = type === "file";
+
   const triggerDownload = () => {
     const a = document.createElement("a");
     a.href = url;
-    a.download = getFileName(isPdf ? "pdf" : isImages ? "zip" : "png");
+    a.download = fileName.includes(".")
+      ? fileName
+      : getFileName(isPdf ? "pdf" : isImages ? "zip" : "png");
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -101,7 +105,7 @@ export function PreviewPanel({ url, type, fileName = "download", onClose, imageU
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {isPdf ? <FileText className="h-4 w-4 text-primary" /> : <ImageIcon className="h-4 w-4 text-primary" />}
+            {isPdf || isFile ? <FileText className="h-4 w-4 text-primary" /> : <ImageIcon className="h-4 w-4 text-primary" />}
             <CardTitle className="text-base">{t("title")}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
@@ -187,7 +191,17 @@ export function PreviewPanel({ url, type, fileName = "download", onClose, imageU
                 )}
               </div>
             )}
-            {!isPdf && !isImages && (
+            {isFile && (
+              <div className="rounded-lg border bg-muted/30 p-8 text-center">
+                <p className="text-sm font-medium mb-1">{fileName}</p>
+                <p className="text-sm text-muted-foreground mb-3">{t("fileReady")}</p>
+                <Button variant="outline" size="sm" onClick={triggerDownload}>
+                  <Download className="h-3.5 w-3.5 mr-1" />
+                  {t("download")}
+                </Button>
+              </div>
+            )}
+            {!isPdf && !isImages && !isFile && (
               <div className="rounded-lg border overflow-hidden bg-muted/30 flex items-center justify-center p-4">
                 <img
                   src={url}

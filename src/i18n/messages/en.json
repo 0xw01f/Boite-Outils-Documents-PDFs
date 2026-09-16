@@ -40,8 +40,8 @@
     "compress-image": { "name": "Compress Image", "description": "Reduce size without losing quality" },
     "convert-image": { "name": "Convert Format", "description": "Change your image format" },
     "resize-image": { "name": "Resize", "description": "Change your image dimensions" },
-    "metadata-manager": { "name": "PDF Metadata", "description": "Read, edit or remove" },
-    "remove-metadata": { "name": "Remove Metadata", "description": "Clean a PDF's metadata" },
+    "metadata-manager": { "name": "Metadata", "description": "PDF, images, Word, Excel, PowerPoint" },
+    "remove-metadata": { "name": "Remove Metadata", "description": "Clean PDF, images and Office files" },
     "secrets": { "name": "Secret Generator", "description": "UUID, API keys, tokens, passwords" },
     "hash": { "name": "Hash", "description": "Compute the hash of text or a file" },
     "json-formatter": { "name": "JSON Formatter", "description": "Format and validate JSON" },
@@ -118,7 +118,8 @@
     "imageAlt": "Preview",
     "pageAlt": "Page {page}",
     "imagesSummary": "{count, plural, one {# image generated} other {# images generated}}. Images are compressed into a ZIP file.",
-    "galleryPage": "Page {page}"
+    "galleryPage": "Page {page}",
+    "fileReady": "The file is ready. Preview is not available for this format."
   },
   "tool": {
     "mergePdf": {
@@ -281,30 +282,47 @@
       "error": "Error during resizing."
     },
     "metadataManager": {
-      "title": "PDF Metadata",
-      "description": "View, edit or remove your PDFs metadata.",
-      "noFileError": "Please select a PDF file.",
-      "loadError": "Unable to read PDF metadata.",
+      "title": "Metadata",
+      "description": "View, edit or remove metadata from a PDF, image or Office document. Everything stays in the browser.",
+      "noFileError": "Please select a file.",
+      "loadError": "Unable to read this file's metadata.",
+      "unsupportedError": "Unsupported format (SVG, HTML, scripts and macro-enabled Office files are blocked).",
       "viewTab": "View",
       "editTab": "Edit",
       "modified": "modified",
+      "kindLabel": "Detected type: {kind}",
+      "kinds": {
+        "pdf": "PDF",
+        "jpeg": "JPEG",
+        "png": "PNG",
+        "webp": "WebP",
+        "heic": "HEIC",
+        "gif": "GIF",
+        "office": "Office document"
+      },
       "titleLabel": "Title",
       "authorLabel": "Author",
       "subjectLabel": "Subject",
       "keywordsLabel": "Keywords",
       "creatorLabel": "Creator",
       "producerLabel": "Producer",
+      "copyrightLabel": "Copyright",
+      "gpsLabel": "GPS (read-only)",
       "empty": "—",
       "creationDateLabel": "Creation date",
       "modificationDateLabel": "Modification date",
       "editHint": "Edit the fields below then click \"Apply changes\".",
       "emptyHint": "Leave a field empty to remove it.",
+      "localHint": "No file is uploaded to a server.",
+      "gpsHint": "GPS coordinates are shown but never written back.",
+      "rasterHint": "HEIC, WebP and GIF are re-encoded as JPEG on save (original GPS and EXIF are stripped).",
       "titlePlaceholder": "Document title",
       "authorPlaceholder": "Author name",
       "subjectPlaceholder": "Document subject",
       "keywordsPlaceholder": "keyword1, keyword2, keyword3",
       "creatorPlaceholder": "Creator software",
       "producerPlaceholder": "Producer software",
+      "copyrightPlaceholder": "© Rights holder",
       "processing": "Applying...",
       "action": "Apply changes",
       "clear": "Clear all",
@@ -312,8 +330,9 @@
     },
     "removeMetadata": {
       "title": "Remove Metadata",
-      "description": "Clean a PDF's metadata (author, title, etc.).",
-      "noFileError": "Please select a PDF file.",
+      "description": "Clean metadata from a PDF, image or Office document (author, GPS, title, etc.). 100% in-browser.",
+      "noFileError": "Please select a file.",
+      "unsupportedError": "Unsupported format (SVG, HTML, scripts and macro-enabled Office files are blocked).",
       "processing": "Processing...",
       "action": "Clean",
       "error": "Error removing metadata."
@@ -505,14 +524,14 @@
         "keywords": ["resize image", "image size", "image dimensions", "resize photo"]
       },
       "remove-metadata": {
-        "title": "Remove PDF metadata",
-        "description": "Erase all metadata (author, title, dates) from a PDF in one click. Complete cleanup.",
-        "keywords": ["remove PDF metadata", "clear PDF metadata", "anonymize PDF"]
+        "title": "Remove metadata — PDF, images, Office",
+        "description": "Erase author, GPS, title and other metadata from a PDF, image or Office document. 100% local, in the browser.",
+        "keywords": ["remove metadata", "strip EXIF", "anonymize PDF", "remove photo GPS"]
       },
       "metadata-manager": {
-        "title": "Manage PDF metadata",
-        "description": "Read, edit or remove PDF metadata. 100% local metadata editor.",
-        "keywords": ["PDF metadata", "edit PDF metadata", "modify PDF", "PDF info"]
+        "title": "Manage metadata — PDF, images, Office",
+        "description": "Read, edit or remove metadata from a PDF, JPEG, PNG, WebP, HEIC or Word/Excel/PowerPoint file. 100% local editor.",
+        "keywords": ["PDF metadata", "EXIF", "edit metadata", "photo GPS", "Word metadata"]
       },
       "hash": {
         "title": "Hash — Compute digital fingerprint",

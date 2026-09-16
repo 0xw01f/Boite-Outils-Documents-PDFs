@@ -1,10 +1,7 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-
 import { useState, useCallback, useEffect } from "react";
-import { cleanText } from "@/lib/sanitize";
-import { PDFDocument } from "pdf-lib";
 import { FileDropZone } from "@/components/file-drop-zone";
 import { ToolLayout } from "@/components/tool-layout";
 import { Button } from "@/components/ui/button";
@@ -15,36 +12,55 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PreviewPanel } from "@/components/preview-panel";
+import {
+  EMPTY_METADATA,
+  METADATA_FIELD_MAX,
+  detectKind,
+  isBlockedMetadataFile,
+  readFileMetadata,
+  writeFileMetadata,
+  type FileMetadata,
+  type MetadataKind,
+} from "@/features/remove-metadata/lib/file-metadata";
 
-interface PdfMetadata {
-  title: string;
-  author: string;
-  subject: string;
-  keywords: string;
-  creator: string;
-  producer: string;
-  creationDate?: string;
-  modificationDate?: string;
-}
+const ACCEPT = [
+  ".pdf",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".heic",
+  ".heif",
+  ".docx",
+  ".xlsx",
+  ".pptx",
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+].join(",");
 
-const EMPTY_METADATA: PdfMetadata = {
-  title: "",
-  author: "",
-  subject: "",
-  keywords: "",
-  creator: "",
-  producer: "",
-};
+type PreviewType = "pdf" | "image" | "file";
 
 export function MetadataTool() {
   const t = useTranslations("tool.metadataManager");
   const locale = useLocale();
   const [files, setFiles] = useState<File[]>([]);
-  const [metadata, setMetadata] = useState<PdfMetadata>(EMPTY_METADATA);
-  const [originalMetadata, setOriginalMetadata] = useState<PdfMetadata>(EMPTY_METADATA);
+  const [kind, setKind] = useState<MetadataKind | null>(null);
+  const [metadata, setMetadata] = useState<FileMetadata>(EMPTY_METADATA);
+  const [originalMetadata, setOriginalMetadata] = useState<FileMetadata>(EMPTY_METADATA);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultName, setResultName] = useState("metadata.bin");
+  const [resultType, setResultType] = useState<PreviewType>("pdf");
   const [activeTab, setActiveTab] = useState("view");
 
   useEffect(() => {
@@ -53,47 +69,46 @@ export function MetadataTool() {
     };
   }, [resultUrl]);
 
-  const extractMetadata = async (pdf: PDFDocument): Promise<PdfMetadata> => {
-    const rawKeywords = pdf.getKeywords();
-    let keywords = "";
-    if (rawKeywords) {
-      keywords = Array.isArray(rawKeywords) ? rawKeywords.join(", ") : String(rawKeywords);
-    }
-
-    return {
-      title: pdf.getTitle() || "",
-      author: pdf.getAuthor() || "",
-      subject: pdf.getSubject() || "",
-      keywords,
-      creator: pdf.getCreator() || "",
-      producer: pdf.getProducer() || "",
-      creationDate: pdf.getCreationDate()?.toISOString?.() || "",
-      modificationDate: pdf.getModificationDate()?.toISOString?.() || "",
-    };
+  const reset = () => {
+    setFiles([]);
+    setKind(null);
+    setMetadata(EMPTY_METADATA);
+    setOriginalMetadata(EMPTY_METADATA);
+    setResultUrl(null);
+    setError(null);
   };
 
-  const handleFilesSelected = useCallback(async (newFiles: File[]) => {
-    const file = newFiles[0];
-    if (!file) return;
+  const handleFilesSelected = useCallback(
+    async (newFiles: File[]) => {
+      const file = newFiles[0];
+      if (!file) return;
 
-    setFiles([file]);
-    setError(null);
-    setResultUrl(null);
+      if (isBlockedMetadataFile(file) || !detectKind(file)) {
+        setError(t("unsupportedError"));
+        setFiles([]);
+        setKind(null);
+        return;
+      }
 
-    try {
-      const bytes = await file.arrayBuffer();
-      const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
-      const meta = await extractMetadata(pdf);
-      setMetadata(meta);
-      setOriginalMetadata(meta);
-      setActiveTab("view");
-    } catch {
-      setError(t("loadError"));
-    }
-  }, [t]);
+      setFiles([file]);
+      setError(null);
+      setResultUrl(null);
 
-  const updateMetadataField = (field: keyof PdfMetadata, value: string) => {
-    setMetadata((prev) => ({ ...prev, [field]: value }));
+      try {
+        const { kind: detected, metadata: meta } = await readFileMetadata(file);
+        setKind(detected);
+        setMetadata(meta);
+        setOriginalMetadata(meta);
+        setActiveTab("view");
+      } catch {
+        setError(t("loadError"));
+      }
+    },
+    [t]
+  );
+
+  const updateMetadataField = (field: keyof FileMetadata, value: string) => {
+    setMetadata((prev) => ({ ...prev, [field]: value.slice(0, METADATA_FIELD_MAX) }));
     setResultUrl(null);
   };
 
@@ -107,23 +122,12 @@ export function MetadataTool() {
       setProcessing(true);
       setError(null);
 
-      const file = files[0];
-      const bytes = await file.arrayBuffer();
-      const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
-
-      pdf.setTitle(cleanText(metadata.title) || "");
-      pdf.setAuthor(cleanText(metadata.author) || "");
-      pdf.setSubject(cleanText(metadata.subject) || "");
-      pdf.setKeywords(metadata.keywords ? cleanText(metadata.keywords).split(",").map((k) => k.trim()) : []);
-      pdf.setCreator(cleanText(metadata.creator) || "");
-      pdf.setProducer(cleanText(metadata.producer) || "");
-      pdf.setModificationDate(new Date());
-      const newBytes = await pdf.save();
-      const blob = new Blob([newBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const result = await writeFileMetadata(files[0], metadata);
       if (resultUrl) URL.revokeObjectURL(resultUrl);
-      const url = URL.createObjectURL(blob);
-      setResultUrl(url);
-      setOriginalMetadata(metadata);
+      setResultUrl(URL.createObjectURL(result.blob));
+      setResultName(result.fileName);
+      setResultType(result.previewType);
+      setOriginalMetadata({ ...metadata, creationDate: "", modificationDate: "", gps: "" });
     } catch {
       setError(t("error"));
     } finally {
@@ -132,23 +136,23 @@ export function MetadataTool() {
   };
 
   const clearAllMetadata = () => {
-    setMetadata(EMPTY_METADATA);
+    setMetadata({ ...EMPTY_METADATA, gps: metadata.gps, creationDate: metadata.creationDate, modificationDate: metadata.modificationDate });
     setResultUrl(null);
   };
 
-  const hasChanges = JSON.stringify(metadata) !== JSON.stringify(originalMetadata);
+  const hasChanges = JSON.stringify({ ...metadata, gps: "", creationDate: "", modificationDate: "" }) !==
+    JSON.stringify({ ...originalMetadata, gps: "", creationDate: "", modificationDate: "" });
+  const convertsToJpeg = kind === "heic" || kind === "webp" || kind === "gif";
+  const showProducer = kind === "pdf";
 
   return (
-    <ToolLayout
-      title={t("title")}
-      description={t("description")}
-    >
+    <ToolLayout title={t("title")} description={t("description")}>
       <div className="space-y-6">
         <FileDropZone
-          accept=".pdf,application/pdf"
+          accept={ACCEPT}
           onFilesSelected={handleFilesSelected}
           files={files}
-          onRemoveFile={() => { setFiles([]); setMetadata(EMPTY_METADATA); setOriginalMetadata(EMPTY_METADATA); setResultUrl(null); }}
+          onRemoveFile={reset}
         />
 
         {files.length > 0 && (
@@ -162,28 +166,43 @@ export function MetadataTool() {
                 <Save className="h-4 w-4 mr-2" />
                 {t("editTab")}
                 {hasChanges && (
-                  <Badge variant="secondary" className="ml-2 text-[10px] px-1.5">{t("modified")}</Badge>
+                  <Badge variant="secondary" className="ml-2 text-[10px] px-1.5">
+                    {t("modified")}
+                  </Badge>
                 )}
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="view" className="space-y-4 mt-4">
+              {kind && (
+                <p className="text-xs text-muted-foreground">{t("kindLabel", { kind: t(`kinds.${kind}`) })}</p>
+              )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <MetadataField label={t("titleLabel")} value={metadata.title || t("empty")} />
                 <MetadataField label={t("authorLabel")} value={metadata.author || t("empty")} />
                 <MetadataField label={t("subjectLabel")} value={metadata.subject || t("empty")} />
                 <MetadataField label={t("keywordsLabel")} value={metadata.keywords || t("empty")} />
                 <MetadataField label={t("creatorLabel")} value={metadata.creator || t("empty")} />
-                <MetadataField label={t("producerLabel")} value={metadata.producer || t("empty")} />
+                {showProducer && (
+                  <MetadataField label={t("producerLabel")} value={metadata.producer || t("empty")} />
+                )}
+                <MetadataField label={t("copyrightLabel")} value={metadata.copyright || t("empty")} />
               </div>
-              {(metadata.creationDate || metadata.modificationDate) && (
+              {(metadata.creationDate || metadata.modificationDate || metadata.gps) && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {metadata.creationDate && (
-                    <MetadataField label={t("creationDateLabel")} value={new Date(metadata.creationDate).toLocaleString(locale)} />
+                    <MetadataField
+                      label={t("creationDateLabel")}
+                      value={formatDate(metadata.creationDate, locale)}
+                    />
                   )}
                   {metadata.modificationDate && (
-                    <MetadataField label={t("modificationDateLabel")} value={new Date(metadata.modificationDate).toLocaleString(locale)} />
+                    <MetadataField
+                      label={t("modificationDateLabel")}
+                      value={formatDate(metadata.modificationDate, locale)}
+                    />
                   )}
+                  {metadata.gps && <MetadataField label={t("gpsLabel")} value={metadata.gps} />}
                 </div>
               )}
             </TabsContent>
@@ -192,81 +211,29 @@ export function MetadataTool() {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  {t("editHint")} {t("emptyHint")}
+                  {t("editHint")} {t("emptyHint")} {t("localHint")} {t("gpsHint")}
+                  {convertsToJpeg ? ` ${t("rasterHint")}` : ""}
                 </AlertDescription>
               </Alert>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label htmlFor="title">{t("titleLabel")}</Label>
-                  <Input
-                    id="title"
-                    value={metadata.title}
-                    onChange={(e) => updateMetadataField("title", e.target.value)}
-                    placeholder={t("titlePlaceholder")}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="author">{t("authorLabel")}</Label>
-                  <Input
-                    id="author"
-                    value={metadata.author}
-                    onChange={(e) => updateMetadataField("author", e.target.value)}
-                    placeholder={t("authorPlaceholder")}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="subject">{t("subjectLabel")}</Label>
-                  <Input
-                    id="subject"
-                    value={metadata.subject}
-                    onChange={(e) => updateMetadataField("subject", e.target.value)}
-                    placeholder={t("subjectPlaceholder")}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <Label htmlFor="keywords">{t("keywordsLabel")}</Label>
-                  <Input
-                    id="keywords"
-                    value={metadata.keywords}
-                    onChange={(e) => updateMetadataField("keywords", e.target.value)}
-                    placeholder={t("keywordsPlaceholder")}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="creator">{t("creatorLabel")}</Label>
-                  <Input
-                    id="creator"
-                    value={metadata.creator}
-                    onChange={(e) => updateMetadataField("creator", e.target.value)}
-                    placeholder={t("creatorPlaceholder")}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="producer">{t("producerLabel")}</Label>
-                  <Input
-                    id="producer"
-                    value={metadata.producer}
-                    onChange={(e) => updateMetadataField("producer", e.target.value)}
-                    placeholder={t("producerPlaceholder")}
-                  />
-                </div>
+                <MetaInput id="title" label={t("titleLabel")} value={metadata.title} placeholder={t("titlePlaceholder")} onChange={(v) => updateMetadataField("title", v)} />
+                <MetaInput id="author" label={t("authorLabel")} value={metadata.author} placeholder={t("authorPlaceholder")} onChange={(v) => updateMetadataField("author", v)} />
+                <MetaInput id="subject" label={t("subjectLabel")} value={metadata.subject} placeholder={t("subjectPlaceholder")} onChange={(v) => updateMetadataField("subject", v)} className="sm:col-span-2" />
+                <MetaInput id="keywords" label={t("keywordsLabel")} value={metadata.keywords} placeholder={t("keywordsPlaceholder")} onChange={(v) => updateMetadataField("keywords", v)} className="sm:col-span-2" />
+                <MetaInput id="creator" label={t("creatorLabel")} value={metadata.creator} placeholder={t("creatorPlaceholder")} onChange={(v) => updateMetadataField("creator", v)} />
+                {showProducer && (
+                  <MetaInput id="producer" label={t("producerLabel")} value={metadata.producer} placeholder={t("producerPlaceholder")} onChange={(v) => updateMetadataField("producer", v)} />
+                )}
+                <MetaInput id="copyright" label={t("copyrightLabel")} value={metadata.copyright} placeholder={t("copyrightPlaceholder")} onChange={(v) => updateMetadataField("copyright", v)} className={showProducer ? "sm:col-span-2" : undefined} />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button
-                  onClick={applyMetadata}
-                  disabled={processing}
-                  className="w-full sm:w-auto"
-                >
+                <Button onClick={applyMetadata} disabled={processing} className="w-full sm:w-auto">
                   <Save className="h-4 w-4 mr-2" />
                   {processing ? t("processing") : t("action")}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={clearAllMetadata}
-                  className="w-full sm:w-auto"
-                >
+                <Button variant="outline" onClick={clearAllMetadata} className="w-full sm:w-auto">
                   <Eraser className="h-4 w-4 mr-2" />
                   {t("clear")}
                 </Button>
@@ -285,8 +252,8 @@ export function MetadataTool() {
         {resultUrl && (
           <PreviewPanel
             url={resultUrl}
-            type="pdf"
-            fileName={files[0]?.name || "metadata.pdf"}
+            type={resultType}
+            fileName={resultName}
             onClose={() => setResultUrl(null)}
           />
         )}
@@ -295,11 +262,46 @@ export function MetadataTool() {
   );
 }
 
+function formatDate(value: string, locale: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString(locale);
+}
+
 function MetadataField({ label, value }: { label: string; value: string }) {
   return (
     <div className="p-3 rounded-md bg-muted/50">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className="text-sm font-medium break-all">{value}</p>
+    </div>
+  );
+}
+
+function MetaInput({
+  id,
+  label,
+  value,
+  placeholder,
+  onChange,
+  className,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        value={value}
+        maxLength={METADATA_FIELD_MAX}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
     </div>
   );
 }
