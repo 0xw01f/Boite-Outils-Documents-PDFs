@@ -43,7 +43,7 @@ Tous les traitements s'exécutent **exclusivement dans votre navigateur** via de
 Les outils PDF et images s'exécutent **dans le navigateur**. Deux exceptions serveur :
 
 - Téléchargeur X/Twitter (proxy vidéo)
-- **Bouclier de liens** : stocke uniquement l'URL de destination (Vercel KV) jusqu'à expiration, derrière Cloudflare Turnstile. Les metatags et l'URL publique mentionnent le nom de l'outil, jamais la page cible.
+- **Bouclier de liens** : stocke uniquement l'URL de destination (Redis) jusqu'à expiration, derrière Cloudflare Turnstile. Les metatags et l'URL publique mentionnent le nom de l'outil, jamais la page cible.
 
 ---
 
@@ -79,16 +79,17 @@ npm run build
 
 ### Bouclier de liens (variables d'environnement)
 
+Hébergement type Coolify : ajoute un service **Redis**, puis relie-le à l'app.
+
 ```bash
-KV_REST_API_URL=
-KV_REST_API_TOKEN=
+REDIS_URL=redis://:MOT_DE_PASSE@redis:6379
 TURNSTILE_SECRET_KEY=
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=
 # optionnel, sinon l'origine de la requête est utilisée
 NEXT_PUBLIC_SITE_URL=https://argus-labs.fr
 ```
 
-En développement local, sans KV ni Turnstile, le mapping est gardé en mémoire et le captcha est contourné. En production, KV et Turnstile sont obligatoires.
+En développement local, sans Redis ni Turnstile, le mapping est gardé en mémoire et le captcha est contourné. En production, `REDIS_URL` et Turnstile sont obligatoires.
 
 ---
 

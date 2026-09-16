@@ -570,7 +570,7 @@
       "cookies": "Cookies & trackers",
       "cookiesText": "This site uses Umami, a privacy-friendly self-hosted analytics tool, to anonymously count page views. Umami does not use cookies, track users, or collect personal data. Link Shield loads Cloudflare Turnstile for the captcha. No other tracking cookies, spy pixels or third-party analytics service (Google Analytics, etc.) are used. Only technical session cookies may be used by the Next.js framework for the application to work.",
       "hosting": "Hosting",
-      "hostingText": "PDF and image documents are processed only in your browser (pdf-lib, pdfjs-dist, jspdf). Link Shield uses ephemeral storage (Vercel KV) for the target URL. No server-side processing is performed on your files."
+      "hostingText": "PDF and image documents are processed only in your browser (pdf-lib, pdfjs-dist, jspdf). Link Shield uses ephemeral Redis storage for the target URL. No server-side processing is performed on your files."
     },
     "terms": {
       "title": "Terms of use",

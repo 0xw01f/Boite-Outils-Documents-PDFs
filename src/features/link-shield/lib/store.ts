@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv";
+import { createClient, type RedisClientType } from "redis";
 import {
   CREATE_RATE_LIMIT,
   CREATE_RATE_WINDOW_SEC,
@@ -15,7 +15,11 @@ type MemoryStore = {
   rate: Map<string, { count: number; resetAt: number }>;
 };
 
-const globalStore = globalThis as typeof globalThis & { __linkShieldMemory?: MemoryStore };
+const globalStore = globalThis as typeof globalThis & {
+  __linkShieldMemory?: MemoryStore;
+  __linkShieldRedis?: RedisClientType;
+  __linkShieldRedisPromise?: Promise<RedisClientType>;
+};
 
 function memory(): MemoryStore {
   if (!globalStore.__linkShieldMemory) {
@@ -27,16 +31,45 @@ function memory(): MemoryStore {
   return globalStore.__linkShieldMemory;
 }
 
+function redisUrl(): string | undefined {
+  return process.env.REDIS_URL?.trim() || undefined;
+}
+
 function useMemoryFallback(): boolean {
-  return process.env.NODE_ENV !== "production" && !process.env.KV_REST_API_URL;
+  return !redisUrl();
+}
+
+async function getRedis(): Promise<RedisClientType> {
+  const url = redisUrl();
+  if (!url) {
+    throw new Error("REDIS_URL is not set");
+  }
+  if (globalStore.__linkShieldRedis?.isOpen) {
+    return globalStore.__linkShieldRedis;
+  }
+  if (!globalStore.__linkShieldRedisPromise) {
+    const client = createClient({ url }) as RedisClientType;
+    client.on("error", (err) => {
+      console.error("Redis error", err);
+    });
+    globalStore.__linkShieldRedisPromise = client.connect().then(() => {
+      globalStore.__linkShieldRedis = client;
+      return client;
+    });
+  }
+  return globalStore.__linkShieldRedisPromise;
 }
 
 export async function saveLink(id: string, record: ShieldRecord, ttlSeconds: number): Promise<void> {
   if (useMemoryFallback()) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("REDIS_URL is not set");
+    }
     memory().links.set(id, record);
     return;
   }
-  await kv.set(`${LINK_PREFIX}${id}`, record, { ex: ttlSeconds });
+  const redis = await getRedis();
+  await redis.set(`${LINK_PREFIX}${id}`, JSON.stringify(record), { EX: ttlSeconds });
 }
 
 export async function getLink(id: string): Promise<ShieldRecord | null> {
@@ -49,7 +82,14 @@ export async function getLink(id: string): Promise<ShieldRecord | null> {
     }
     return record;
   }
-  return (await kv.get<ShieldRecord>(`${LINK_PREFIX}${id}`)) ?? null;
+  const redis = await getRedis();
+  const raw = await redis.get(`${LINK_PREFIX}${id}`);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as ShieldRecord;
+  } catch {
+    return null;
+  }
 }
 
 export async function allowCreate(ip: string): Promise<boolean> {
@@ -66,10 +106,11 @@ export async function allowCreate(ip: string): Promise<boolean> {
     return current.count <= CREATE_RATE_LIMIT;
   }
 
+  const redis = await getRedis();
   const redisKey = `${RL_PREFIX}${key}`;
-  const count = await kv.incr(redisKey);
+  const count = await redis.incr(redisKey);
   if (count === 1) {
-    await kv.expire(redisKey, CREATE_RATE_WINDOW_SEC);
+    await redis.expire(redisKey, CREATE_RATE_WINDOW_SEC);
   }
   return count <= CREATE_RATE_LIMIT;
 }

@@ -570,7 +570,7 @@
       "cookies": "Cookies & traceurs",
       "cookiesText": "Ce site utilise Umami, un outil d'analyse auto-hébergé et respectueux de la vie privée, pour compter les pages vues de manière anonyme. Umami ne dépose aucun cookie, ne trace pas les utilisateurs et ne collecte aucune donnée personnelle. Le Bouclier de liens charge Cloudflare Turnstile pour le captcha. Aucun autre cookie de traçage, pixel espion ou service d'analyse tierce (Google Analytics, etc.) n'est utilisé. Seuls des cookies techniques de session peuvent être utilisés par le framework Next.js pour le fonctionnement de l'application.",
       "hosting": "Hébergement",
-      "hostingText": "Les documents PDF et images sont traités uniquement dans votre navigateur (pdf-lib, pdfjs-dist, jspdf). Le Bouclier de liens utilise un stockage éphémère (Vercel KV) pour l'URL cible. Aucun traitement serveur n'est effectué sur vos fichiers."
+      "hostingText": "Les documents PDF et images sont traités uniquement dans votre navigateur (pdf-lib, pdfjs-dist, jspdf). Le Bouclier de liens utilise un Redis éphémère pour l'URL cible. Aucun traitement serveur n'est effectué sur vos fichiers."
     },
     "terms": {
       "title": "Conditions d'utilisation",

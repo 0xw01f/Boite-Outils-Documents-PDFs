@@ -126,7 +126,7 @@ export default async function LegalPage({ params }: { params: Promise<{ locale: 
             <li className="p-2 rounded-md bg-muted/50"><strong>Lucide React</strong> — {t("credits.lucide")}</li>
             <li className="p-2 rounded-md bg-muted/50"><strong>Radix UI</strong> — {t("credits.radix")}</li>
             <li className="p-2 rounded-md bg-muted/50"><strong>Cloudflare Turnstile</strong> — {t("credits.turnstile")}</li>
-            <li className="p-2 rounded-md bg-muted/50"><strong>Vercel KV</strong> — {t("credits.kv")}</li>
+            <li className="p-2 rounded-md bg-muted/50"><strong>Redis</strong> — {t("credits.kv")}</li>
           </ul>
           <p className="text-muted-foreground">{t("credits.note")}</p>
         </CardContent>
